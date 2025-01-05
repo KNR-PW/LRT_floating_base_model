@@ -12,6 +12,7 @@ find_package(ament_cmake REQUIRED)
 
 set(THIS_PACKAGE_DEPENDS
   ocs2_pinocchio_interface 
+  ocs2_centroidal_model
 )
 
 
@@ -31,8 +32,8 @@ endforeach()
 include_directories(include)
 
 add_executable(${PROJECT_NAME}
-  src/CentroidalModel.cpp
-  src/MultiEndEffectorKinematics.cpp
+  src/CentroidalModelDynamics.cpp
+  src/CentroidalModelParams.cpp
   src/main.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})

@@ -1,10 +1,12 @@
-#ifndef _CENTROIDAL_MODEL_HPP_
 
-#define _CENTROIDAL_MODEL_HPP_
+#ifndef _CENTROIDAL_MODEL_PARAMS_HPP_
+
+#define _CENTROIDAL_MODEL_PARAMS_HPP_
 
 #include <pinocchio/fwd.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/multibody/model.hpp>
+#include <pinocchio/algorithm/center-of-mass.hpp>
 
 #include <ostream>
 #include <string>
@@ -13,15 +15,20 @@
 
 #include <ocs2_core/Types.h>
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
-// #include <ocs2_core/automatic_differentiation/Types.h>
+#include <ocs2_centroidal_model/FactoryFunctions.h>
+#include "ocs2_pinocchio_interface/urdf.h"
 
 using namespace ocs2;
 
-struct CentroidalModelInfo
+namespace legged_mpc
 {
-  CentroidalModelInfo(const PinocchioInterface& _interface, 
-                      const std::vector<std::string>& _threeDofContactNames,
-                      const std::vector<std::string>& _sixDofContactNames);
+
+struct CentroidalModelParams
+{
+  CentroidalModelParams(const PinocchioInterface& interface, 
+                      const std::vector<std::string>& threeDofContactNames,
+                      const std::vector<std::string>& sixDofContactNames);
+  void print();
 
   size_t numThreeDofContacts;                   // 3DOF contacts, force only
   size_t numSixDofContacts;                     // 6DOF contacts, force and torque
@@ -31,25 +38,7 @@ struct CentroidalModelInfo
   size_t stateDim;                              // number of states needed to define the system flow map
   size_t inputDim;                              // number of inputs needed to define the system flow map
   scalar_t robotMass;                           // total robot mass
-  
-
 };
-
-
-class CentroidalModel
-{
-
-  public:
-
-  CentroidalModel(const CentroidalModelInfo& _info, const PinocchioInterface& _interface);
-
-
-  private:
-
-  CentroidalModelInfo& info_;
-  PinocchioInterface& interface_;
-
-
 
 };
 
