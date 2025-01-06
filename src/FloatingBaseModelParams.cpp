@@ -1,9 +1,10 @@
-#include <centroidal_model/CentroidalModelParams.hpp>
+#include <floating_base_model/FloatingBaseModelParams.hpp>
 
 
 using namespace ocs2;
+using namespace floating_base_model;
 
-legged_mpc::CentroidalModelParams::CentroidalModelParams(const PinocchioInterface& interface, 
+FloatingBaseModelParams::FloatingBaseModelParams(const PinocchioInterface& interface, 
                     const std::vector<std::string>& threeDofContactNames,
                     const std::vector<std::string>& sixDofContactNames)
 {
@@ -27,11 +28,11 @@ legged_mpc::CentroidalModelParams::CentroidalModelParams(const PinocchioInterfac
   }
 }
 
-void legged_mpc::CentroidalModelParams::CentroidalModelParams::print()
+void FloatingBaseModelParams::FloatingBaseModelParams::print()
 {
   std::cout << "|--Definitions of centroidal model--|" << std::endl;
   std::cout << "State vector definition: " << std::endl;
-  std::cout << "x = [base_linear_velocity, base_angular_velocity, base_position, base_orientation_zyx,  joint_positions]" << std::endl;
+  std::cout << "x = [base_linear_velocity, base_orientation_zyx_velocity, base_position, base_orientation_zyx,  joint_positions]" << std::endl;
   std::cout << "|-----------------------------------|" << std::endl;
   std::cout << "Input vector definition: " << std::endl;
   std::cout << "u = [contact_forces, contact_wrenches, joint_velocities]" << std::endl;

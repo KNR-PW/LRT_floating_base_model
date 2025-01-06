@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16 )
-project(centroidal_model LANGUAGES CXX)
+project(floating_base_model LANGUAGES CXX)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -32,8 +32,8 @@ endforeach()
 include_directories(include)
 
 add_executable(${PROJECT_NAME}
-  src/CentroidalModelDynamics.cpp
-  src/CentroidalModelParams.cpp
+  src/FloatingBaseModelDynamics.cpp
+  src/FloatingBaseModelParams.cpp
   src/main.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
@@ -84,7 +84,7 @@ ament_package()
 
 
 # cmake_minimum_required(VERSION 3.16)
-# project(centroidal_model LANGUAGES CXX)
+# project(floating_base_model LANGUAGES CXX)
 
 # if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #   add_compile_options(-Wall -Wextra -Wpedantic)
