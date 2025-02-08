@@ -17,8 +17,8 @@ namespace floating_base_model
    * @param [in] A(q): centroidal momentum matrix
    * @return Ab_inv(q): inverse of the 6x6 left-block of A(q)
    */
-  
-  Eigen::Matrix<scalar_t, 6, 6> computeFloatingBaseCentroidalMomentumMatrixInverse(const Eigen::Matrix<scalar_t, 6, 6>& Ab);
+  template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseCentroidalMomentumMatrixInverse(const Eigen::Matrix<SCALAR_T, 6, 6>& Ab);
 
   /**
    * Updates the centroidal momentum matrix in data.Ag and the CoM position in data.com[0] for the FullCentroidalDynamics
@@ -32,9 +32,9 @@ namespace floating_base_model
    *       pinocchio::computeJointJacobians(model, data, q) (only for the FullCentroidalDynamics case)
    *       pinocchio::updateFramePlacements(model, data)
    */
-  
-  void updateCentroidalDynamics(PinocchioInterfaceTpl<scalar_t>& interface, const FloatingBaseModelParams& params,
-                                const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>& q);
+  template <typename SCALAR_T>
+  void updateCentroidalDynamics(PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelParams& params,
+                                const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q);
 
   /**
    * Updates the centroidal momentum derivatives (such as in data.dHdq) for the FullCentroidalDynamics model
@@ -49,10 +49,10 @@ namespace floating_base_model
    *       pinocchio::computeJointJacobians(model, data, q)
    *       pinocchio::updateFramePlacements(model, data)
    */
-  
-  void updateCentroidalDynamicsDerivatives(PinocchioInterfaceTpl<scalar_t>& interface, const FloatingBaseModelParams& params,
-                                           const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>& q,
-                                           const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>& v);
+  template <typename SCALAR_T>
+  void updateCentroidalDynamicsDerivatives(PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelParams& params,
+                                           const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
+                                           const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v);
 
   /**
    * Computes derivatives of the mapping (ZYX-Euler angles derivatives --> Global angular velocities)
@@ -61,8 +61,8 @@ namespace floating_base_model
    * @param [in] eulerAngles: ZYX-Euler angles extracted from qPinocchio
    * @return A tensor representing the derivative of the mapping w.r.t the ZYX-Euler angles
    */
-  
-  std::array<Eigen::Matrix<scalar_t, 3, 3>, 3> getMappingZyxGradient(const Eigen::Matrix<scalar_t, 3, 1>& eulerAngles);
+  template <typename SCALAR_T>
+  std::array<Eigen::Matrix<SCALAR_T, 3, 3>, 3> getMappingZyxGradient(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAngles);
 
   /**
    * Computes derivatives of the rotation matrix (base frame --> world frame) with respect to
@@ -71,8 +71,8 @@ namespace floating_base_model
    * @param [in] eulerAngles: ZYX-Euler angles extracted from qPinocchio
    * @return A tensor representing the derivative of the rotation matrix w.r.t the ZYX-Euler angles
    */
-  
-  std::array<Eigen::Matrix<scalar_t, 3, 3>, 3> getRotationMatrixZyxGradient(const Eigen::Matrix<scalar_t, 3, 1>& eulerAngles);
+  template <typename SCALAR_T>
+  std::array<Eigen::Matrix<SCALAR_T, 3, 3>, 3> getRotationMatrixZyxGradient(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAngles);
 
   /**
    * Computes derivatives of centroidal momentum with respect to the base orientation (in ZYX-Euler angles)
@@ -83,11 +83,11 @@ namespace floating_base_model
    * @param [in] v: pinocchio joint velocities (derivatives of generalized coordinates)
    * @return Derivative of centroidal momentum w.r.t the ZYX-Euler Angles
    */
-  
-  Eigen::Matrix<scalar_t, 6, 3> getCentroidalMomentumZyxGradient(const PinocchioInterfaceTpl<scalar_t>& interface,
+  template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 6, 3> getCentroidalMomentumZyxGradient(const PinocchioInterfaceTpl<SCALAR_T>& interface,
                                                                  const FloatingBaseModelParams& params,
-                                                                 const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>& q,
-                                                                 const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>& v);
+                                                                 const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
+                                                                 const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v);
 
   /**
    * Returns the centroidal momentum matrix from the pinocchioInterface data
@@ -97,8 +97,8 @@ namespace floating_base_model
    * @note requires pinocchioInterface to be updated with:
    *       ocs2::updateCentroidalDynamics(interface, info, q)
    */
-  
-  const Eigen::Matrix<scalar_t, 6, Eigen::Dynamic>& getCentroidalMomentumMatrix(const PinocchioInterfaceTpl<scalar_t>& interface);
+  template <typename SCALAR_T>
+  const Eigen::Matrix<SCALAR_T, 6, Eigen::Dynamic>& getCentroidalMomentumMatrix(const PinocchioInterfaceTpl<SCALAR_T>& interface);
 
   /**
    * Computes the CoM to contact point position in world frame
@@ -111,8 +111,8 @@ namespace floating_base_model
    * @note requires pinocchioInterface to be updated with:
    *       ocs2::updateCentroidalDynamics(interface, info, q)
    */
-  
-  Eigen::Matrix<scalar_t, 3, 1> getPositionComToContactPointInWorldFrame(const PinocchioInterfaceTpl<scalar_t>& interface,
+  template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 3, 1> getPositionComToContactPointInWorldFrame(const PinocchioInterfaceTpl<SCALAR_T>& interface,
                                                                          const FloatingBaseModelParams& params, size_t contactIndex);
 
   /**
@@ -129,9 +129,9 @@ namespace floating_base_model
    *       pinocchio::updateFramePlacements(model, data)
    */
   // TODO: Need to copy data here because getFrameJacobian() modifies data. Will be fixed in pinocchio version 3.
-  
-  Eigen::Matrix<scalar_t, 3, Eigen::Dynamic> getTranslationalJacobianComToContactPointInWorldFrame(
-      const PinocchioInterfaceTpl<scalar_t>& interface, const FloatingBaseModelParams& params, size_t contactIndex);
+  template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 3, Eigen::Dynamic> getTranslationalJacobianComToContactPointInWorldFrame(
+      const PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelParams& params, size_t contactIndex);
 
   /**
    * Computes the derivative of the normalized centroidal momentum (linear + angular) expressed in the centroidal frame
@@ -144,10 +144,10 @@ namespace floating_base_model
    * @note requires pinocchioInterface to be updated with:
    *       ocs2::updateCentroidalDynamics(interface, info, q)
    */
-  
-  Eigen::Matrix<scalar_t, 6, 1> getNormalizedCentroidalMomentumRate(const PinocchioInterfaceTpl<scalar_t>& interface,
+  template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 6, 1> getNormalizedCentroidalMomentumRate(const PinocchioInterfaceTpl<SCALAR_T>& interface,
                                                                     const FloatingBaseModelParams* params,
-                                                                    const Eigen::Matrix<scalar_t, Eigen::Dynamic, 1>& input);
+                                                                    const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input);
 
 };  // namespace floating_base_model
 

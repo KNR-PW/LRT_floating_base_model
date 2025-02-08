@@ -9,7 +9,9 @@ params_{params}, interface_{interface}{ }
 
 PinocchioInterface floating_base_model::makeFloatingBaseInterface(const std::string& urdfFilePath)
 {
-  return centroidal_model::createPinocchioInterface(urdfFilePath);
+  pinocchio::JointModelFreeFlyer freeFlyerJoint;
+  return getPinocchioInterfaceFromUrdfFile(urdfFilePath, freeFlyerJoint);
+  // return centroidal_model::createPinocchioInterface(urdfFilePath);
 }
 
 
