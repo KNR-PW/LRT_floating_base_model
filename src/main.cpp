@@ -95,70 +95,34 @@ int main()
   // std::cout << data.f[0] << std::endl;
   // std::cout << data.f[feetJointId] << std::endl;
 
-  pinocchio::nonLinearEffects(model, data, q, dq);
-  pinocchio::computeCoriolisMatrix(model, data, q, dq);
-  pinocchio::computeGeneralizedGravity(model, data, q);
+  // pinocchio::nonLinearEffects(model, data, q, dq);
+  // pinocchio::computeCoriolisMatrix(model, data, q, dq);
+  // pinocchio::computeGeneralizedGravity(model, data, q);
 
-  std::cout << quaterion << std::endl;
+  // std::cout << quaterion << std::endl;
 
 
-  auto quaterion_2 = ocs2::matrixToQuaternion(data.oMi[1].rotation());
-  std::cout << quaterion_2 << std::endl;
-  Eigen::Vector<scalar_t, Eigen::Dynamic> error = data.nle - data.g - data.C*dq;
-  std::cout << "Error: " << error.norm() << std::endl;
+  // auto quaterion_2 = ocs2::matrixToQuaternion(data.oMi[1].rotation());
+  // std::cout << quaterion_2 << std::endl;
+  // Eigen::Vector<scalar_t, Eigen::Dynamic> error = data.nle - data.g - data.C*dq;
+  // std::cout << "Error: " << error.norm() << std::endl;
 
 
 
   Eigen::Vector3d test_vector(1, 2, 3);
   Eigen::Vector3d euler(1, -1, M_PI/6);
-  auto quaterion_map = quaterion_transforms::getVectorQuaterionDerivative(test_vector, quaterion);
-  auto quaterion_euler_map = quaterion_transforms::getQuaternionFromEulerAnglesZyxDerivative(euler);
+  quaterion = ocs2::getQuaternionFromEulerAnglesZyx(euler);
+  auto dRdq = quaterion_transforms::getRotationMatrixQuaterionGradient(quaterion);
+  auto dRde = ocs2::getRotationMatrixZyxGradient(euler);
+  auto quaterion_euler_map = quaterion_transforms::getQuaternionFromEulerAnglesZyxGradient(euler);
 
-  Eigen::Matrix3d vec_1;
-  std::cout << quaterion_map << std::endl;
-  std::cout << quaterion_euler_map << std::endl;
-  vec_1 = quaterion_map * quaterion_euler_map;
+  auto dRdz_euler = dRde[0];
 
-  auto rotation_derivatives = ocs2::getRotationMatrixZyxGradient(euler);
-
-  Eigen::Matrix3d vec_2 = Eigen::Matrix3d::Zero();
-
-  vec_2.leftCols<1>() = rotation_derivatives[0] * test_vector;
-  vec_2.middleCols<1>(1) = rotation_derivatives[1] * test_vector;
-  vec_2.rightCols<1>() = rotation_derivatives[2] * test_vector;
-  std::cout << vec_1 << std::endl;
-  std::cout << vec_2 << std::endl;
-  std::cout << "WYNIK"<< std::endl;
-  std::cout << vec_1 - vec_2 << std::endl;
-
-
-  // auto q_1 = quaterion_transforms::getQuaternionFromEulerAnglesZyx(euler);
-  // auto q_2 = quaterion_transforms::getQuaternionFromEulerAnglesZyx2(euler);
-  // std::cout << q_1 << std::endl;
-  // std::cout << q_2 << std::endl;
-
-  auto r_quat = quaterion_transforms::getVectorQuaterionDerivative2(quaterion);
-
-  Eigen::Matrix<double, 3, 3> matrix_1;
-
-  Eigen::Vector4d temp = quaterion_euler_map * test_vector;
-  matrix_1.noalias() = r_quat[0] * temp[0] + r_quat[1] * temp[1] + r_quat[2] * temp[2] + r_quat[3] * temp[3];
-  
-
-  //vec_1 = matrix_1 * quaterion_euler_map;
-  std::cout << "WYNIK"<< std::endl;
-  std::cout << matrix_1 - vec_2 << std::endl;
-
-  // std::cout << (matrix_1) - quaterion_map << std::endl;
-
-
-  auto euler_local = ocs2::getMappingFromEulerAnglesZyxDerivativeToLocalAngularVelocity(euler);
-  auto quaterion_3 = quaterion_transforms::getQuaternionFromEulerAnglesZyx(euler);
-  auto local_euler = quaterion_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(quaterion_3);
-  std::cout << "REAL SIN: " << sin(euler(2)) << std::endl;
-  std::cout << "REAL COS: " << cos(euler(2)) << std::endl;
-  std::cout << euler_local * local_euler << std::endl;
-
+  Eigen::Vector4d dqdz = quaterion_euler_map.leftCols<1>();
+  auto dRdz_quaterion = dRdq[0] * dqdz[0] + dRdq[1] * dqdz[1] + dRdq[2] * dqdz[2] + dRdq[3] * dqdz[3];
+  std::cout << "NORM: " << (dRdz_euler - dRdz_quaterion).norm() << std::endl;
+  std::cout << dRdz_euler << std::endl;
+  std::cout << dRdz_quaterion << std::endl;
   std::cout << quaterion_transforms::test_func_derivative(euler) << std::endl;
   std::cout << quaterion_transforms::test_func_derivative(quaterion) * quaterion_euler_map << std::endl;
   return 0;
