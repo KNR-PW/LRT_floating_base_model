@@ -121,10 +121,54 @@ int main()
   Eigen::Vector4d dqdz = quaterion_euler_map.leftCols<1>();
   auto dRdz_quaterion = dRdq[0] * dqdz[0] + dRdq[1] * dqdz[1] + dRdq[2] * dqdz[2] + dRdq[3] * dqdz[3];
   std::cout << "NORM: " << (dRdz_euler - dRdz_quaterion).norm() << std::endl;
-  std::cout << dRdz_euler << std::endl;
-  std::cout << dRdz_quaterion << std::endl;
   std::cout << quaterion_transforms::test_func_derivative(euler) << std::endl;
   std::cout << quaterion_transforms::test_func_derivative(quaterion) * quaterion_euler_map << std::endl;
+  
+  auto dvectordq = quaterion_transforms::getRotatedVectorQuaterionGraient(quaterion, test_vector);
+
+  Eigen::Matrix3d dvectorde;
+  
+  dvectorde.col(0) = dRde[0] * test_vector;
+  dvectorde.col(1) = dRde[1] * test_vector;
+  dvectorde.col(2) = dRde[2] * test_vector;
+
+  std::cout << (dvectorde - dvectordq * quaterion_euler_map).norm() << std::endl;
+
+
+  auto dEde = quaterion_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(euler);
+  auto dEdq = quaterion_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(quaterion);
+  
+  Eigen::Matrix3d dvBde;
+
+  dvBde.col(0) = dEde[0] * test_vector;
+  dvBde.col(1) = dEde[1] * test_vector;
+  dvBde.col(2) = dEde[2] * test_vector;
+
+  Eigen::Matrix<double, 3, 4> dvBdq;
+
+  dvBdq.col(0) = dEdq[0] * test_vector;
+  dvBdq.col(1) = dEdq[1] * test_vector;
+  dvBdq.col(2) = dEdq[2] * test_vector;
+  dvBdq.col(3) = dEdq[3] * test_vector;
+
+  dqdz = quaterion_euler_map.col(0);
+  Eigen::Vector4d dqdy = quaterion_euler_map.col(1);
+  Eigen::Vector4d dqdx = quaterion_euler_map.col(2);
+
+  Eigen::Matrix3d dEdz_quaterion = dEdq[0] * dqdz[0] + dEdq[1] * dqdz[1] + dEdq[2] * dqdz[2] + dEdq[3] * dqdz[3];
+  Eigen::Matrix3d dEdy_quaterion = dEdq[0] * dqdy[0] + dEdq[1] * dqdy[1] + dEdq[2] * dqdy[2] + dEdq[3] * dqdy[3];
+  Eigen::Matrix3d dEdx_quaterion = dEdq[0] * dqdx[0] + dEdq[1] * dqdx[1] + dEdq[2] * dqdx[2] + dEdq[3] * dqdx[3];
+
+  std::cout << (dvBde - dvBdq * quaterion_euler_map).norm() << std::endl;
+  std::cout << "Z: " << std::endl;
+  std::cout << (dEde[0] - dEdz_quaterion) << std::endl;
+
+  std::cout << "Y: " << std::endl;
+  std::cout << (dEde[1] - dEdy_quaterion) << std::endl;
+
+  std::cout << "X: " << std::endl;
+  std::cout << (dEde[2] - dEdx_quaterion) << std::endl;
+
   return 0;
 }
 
