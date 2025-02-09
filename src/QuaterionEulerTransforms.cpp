@@ -1,24 +1,10 @@
-#ifndef _QUATERION_TRANSFORMS_HPP_
-#define _QUATERION_TRANSFORMS_HPP_
+#include "floating_base_model/QuaterionEulerTransforms.hpp"
 
-#include <Eigen/Core>
-#include <array>
-#include <cmath>
-
-#include <ocs2_robotic_tools/common/SkewSymmetricMatrix.h>
-
-// CppAD
-#include <ocs2_core/automatic_differentiation/Types.h>
-namespace quaterion_transforms
+namespace quaterion_euler_transforms
 {
-
-  /**
-   * Computes mapping from ZYX euler angles to quaterion
-   *
-   * @param eulerAnglesZyx: euler angles
-   * @return quaterion
-   *
-   */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template <typename SCALAR_T>
   Eigen::Quaternion<SCALAR_T> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx) 
   {
@@ -27,43 +13,15 @@ namespace quaterion_transforms
            Eigen::AngleAxis<SCALAR_T>(eulerAnglesZyx(1), Eigen::Matrix<SCALAR_T, 3, 1>::UnitY()) *
            Eigen::AngleAxis<SCALAR_T>(eulerAnglesZyx(2), Eigen::Matrix<SCALAR_T, 3, 1>::UnitX());
     // clang-format on
-  };
+  }
 
-  // template <typename SCALAR_T>
-  // Eigen::Quaternion<SCALAR_T> getQuaternionFromEulerAnglesZyx2(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx) 
-  // {
-  //   const SCALAR_T half = 0.5;
-  //   const SCALAR_T z = eulerAnglesZyx[0] * half;
-  //   const SCALAR_T y = eulerAnglesZyx[1] * half;
-  //   const SCALAR_T x = eulerAnglesZyx[2] * half;
-
-  //   const SCALAR_T cz = cos(z);
-  //   const SCALAR_T cy = cos(y);
-  //   const SCALAR_T cx = cos(x);
-  //   const SCALAR_T sz = sin(z);
-  //   const SCALAR_T sy = sin(y);
-  //   const SCALAR_T sx = sin(x);
-
-  //   const SCALAR_T qx = sx * cy * cz - cx * sy * sz;
-  //   const SCALAR_T qy = cx * sy * cz + sx * cy * sz;
-  //   const SCALAR_T qz = cx * cy * sz - sx * sy * cz;
-  //   const SCALAR_T qw = cx * cy * cz + sx * sy * sz;
-    
-  //   return Eigen::Quaternion<SCALAR_T>(qw, qx, qy, qz);
-  // };
-
-  /**
-   * Computes mapping from ZYX euler angles to quaterion derivative
-   * with respect to ZYX euler angles
-   *
-   * @param eulerAnglesZyx: euler angles
-   * @return derivative of quaterion with respect to euler angles
-   *
-   */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template <typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx)
   {
-    const SCALAR_T half = 0.5;
+    const SCALAR_T half = SCALAR_T(0.5);
     const SCALAR_T z = eulerAnglesZyx[0] * half;
     const SCALAR_T y = eulerAnglesZyx[1] * half;
     const SCALAR_T x = eulerAnglesZyx[2] * half;
@@ -93,60 +51,11 @@ namespace quaterion_transforms
                                  -half * (cxcysz - sxsycz), -half * (cxsycz - sxcysz), -half * (sxcycz - cxsysz); // dw
     
     return quaterionDerivativeMatrix;
-  };
+  }
 
-  // JEST GIT !!!!
-  template <typename SCALAR_T> 
-  Eigen::Matrix<SCALAR_T, 1, 4> test_func_derivative(const Eigen::Quaternion<SCALAR_T>& quaterion)
-  {
-    Eigen::Matrix<SCALAR_T, 1, 4> return_val;
-    return_val << 1, 1, 0, 0;
-    return return_val;
-  };
-  // JEST GIT !!!!
-  template <typename SCALAR_T> 
-  Eigen::Matrix<SCALAR_T, 1, 3> test_func_derivative(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx)
-  {
-    const SCALAR_T half = 0.5;
-    const SCALAR_T z = eulerAnglesZyx[0] * half;
-    const SCALAR_T y = eulerAnglesZyx[1] * half;
-    const SCALAR_T x = eulerAnglesZyx[2] * half;
-
-    const SCALAR_T cz = cos(z);
-    const SCALAR_T cy = cos(y);
-    const SCALAR_T cx = cos(x);
-    const SCALAR_T sz = sin(z);
-    const SCALAR_T sy = sin(y);
-    const SCALAR_T sx = sin(x);
-
-    const SCALAR_T sxcysz = sx * cy * sz;
-    const SCALAR_T cxsycz = cx * sy * cz;
-    const SCALAR_T cxsysz = cx * sy * sz;
-    const SCALAR_T sxcycz = sx * cy * cz;
-    const SCALAR_T cxcycz = cx * cy * cz;
-    const SCALAR_T sxsysz = sx * sy * sz;
-    const SCALAR_T cxcysz = cx * cy * sz;
-    const SCALAR_T sxsycz = sx * sy * cz;
-
-    Eigen::Matrix<SCALAR_T, 1, 3> funtionDerivativeMatrix;
-
-    funtionDerivativeMatrix << -half * (sxcysz + cxsycz) - half * (cxsysz - sxcycz),
-                               -half * (sxsycz + cxcysz) + half * (cxcycz - sxsysz),
-                                half * (cxcycz + sxsysz) - half * (sxsycz - cxcysz);
-    
-    return funtionDerivativeMatrix;
-
-  };
-
-
-  /**
-   * Computes derivatives of rotation matrix
-   * with respect to quaterion dRdq
-   *
-   * @param quaterion: quaterion
-   * @return array of rotation matrix partial derivatives
-   *
-   */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template <typename SCALAR_T>
   std::array<Eigen::Matrix<SCALAR_T, 3, 3>, 4> getRotationMatrixQuaterionGradient(const Eigen::Quaternion<SCALAR_T>& quaterion)
   {
@@ -174,16 +83,11 @@ namespace quaterion_transforms
             -y, x,  w;
 
     return {dRdx, dRdy, dRdz, dRdw};     
-    
-  };
+  }
 
-  /**
-  * Compute the matrix that maps derivatives 
-  * of local angular velocities to ZYX-Euler angles derivatives
-  *
-  * @param [in] eulerAngles: ZYX-Euler angles
-  * @return 3x3 matrix mapping
-  */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template<typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 3, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(const Eigen::Matrix<SCALAR_T, 3, 1> &eulerAngles) 
   {
@@ -200,16 +104,11 @@ namespace quaterion_transforms
                             SCALAR_T(1.0),    sinx * tgy,    cosx * tgy;
     // clang-format on
     return transformationMatrix;
-  };
+  }
 
-  /**
-  * Compute the matrix that maps derivatives 
-  * of local angular velocities to ZYX-Euler angles derivatives 
-  * gradient with respect to euler angles
-  *
-  * @param [in] eulerAngles: ZYX-Euler angles
-  * @return array of mapping partial derivatives
-  */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template<typename SCALAR_T>
   std::array<Eigen::Matrix<SCALAR_T, 3, 3>, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(const Eigen::Matrix<SCALAR_T, 3, 1> &eulerAngles) 
   {
@@ -224,24 +123,20 @@ namespace quaterion_transforms
 
     dEdz = Eigen::Matrix<SCALAR_T, 3, 3>::Zero();
 
-    dEdy << 0, sinx * siny * inv_cosy2, cosx * siny * inv_cosy2,
-            0, 0, 0,
-            0, sinx * inv_cosy2, cosx * inv_cosy2;
+    dEdy << SCALAR_T(0), sinx * siny * inv_cosy2, cosx * siny * inv_cosy2,
+            SCALAR_T(0), SCALAR_T(0), SCALAR_T(0),
+            SCALAR_T(0), sinx * inv_cosy2, cosx * inv_cosy2;
 
-    dEdx << 0, cosx * inv_cosy, -sinx * inv_cosy,
-            0, -sinx, -cosx,
-            0, cosx * tgy, -sinx * tgy;  
+    dEdx << SCALAR_T(0), cosx * inv_cosy, -sinx * inv_cosy,
+            SCALAR_T(0), -sinx, -cosx,
+            SCALAR_T(0), cosx * tgy, -sinx * tgy;  
     
     return {dEdz, dEdy, dEdx};
-  };
+  }
 
-  /**
-  * Compute the matrix that maps derivatives 
-  * of local angular velocities to ZYX-Euler angles derivatives
-  *
-  * @param [in] quaterion: quaterion
-  * @return 3x3 matrix mapping
-  */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template<typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 3, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(const Eigen::Quaternion<SCALAR_T>& quaterion) 
   {
@@ -264,18 +159,11 @@ namespace quaterion_transforms
                             SCALAR_T(1.0),    sinx * tgy,    cosx * tgy;
     // clang-format on
     return transformationMatrix;
-  };
+  }
 
-
-  /**
-   * Computes derivatives of operation -> rotation_matrix * vector (rotated vector)
-   * with respect to quaterion
-   *
-   * @param quaterion: quaterion
-   * @return rotated_vector derivative 
-   * with respect to quaterion
-   *
-   */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template<typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 3, 4> getRotatedVectorQuaterionGraient(const Eigen::Quaternion<SCALAR_T>& quaterion, const Eigen::Matrix<SCALAR_T, 3, 1> & vector)
   {
@@ -291,17 +179,11 @@ namespace quaterion_transforms
     dvectordq.col(3) = dRdq[3] * vector;
 
     return dvectordq;
-  };
+  }
 
-
-  /**
-  * Compute the matrix that maps derivatives 
-  * of local angular velocities to ZYX-Euler angles derivatives 
-  * gradient with respect to quaterions
-  *
-  * @param [in] quaterions: quaterions
-  * @return array of mapping partial derivatives
-  */
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
   template<typename SCALAR_T>
   std::array<Eigen::Matrix<SCALAR_T, 3, 3>, 4> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(const Eigen::Quaternion<SCALAR_T>& quaterion) 
   {
@@ -355,28 +237,51 @@ namespace quaterion_transforms
 
     Eigen::Matrix<SCALAR_T, 3, 3> dEdx, dEdy, dEdz, dEdw;
 
-    dEdx << 0, (dsinx_dqx * cosy - sinx * dcosy_dqx) * inv_cosy2, (dcosx_dqx * cosy - cosx * dcosy_dqx) * inv_cosy2,
-            0, dcosx_dqx, - dsinx_dqx,
-            0, dsinx_dqx * tgy + sinx * dtgy_dqx, dcosx_dqx * tgy + cosx * dtgy_dqx;
+    dEdx << SCALAR_T(0), (dsinx_dqx * cosy - sinx * dcosy_dqx) * inv_cosy2, (dcosx_dqx * cosy - cosx * dcosy_dqx) * inv_cosy2,
+            SCALAR_T(0), dcosx_dqx, - dsinx_dqx,
+            SCALAR_T(0), dsinx_dqx * tgy + sinx * dtgy_dqx, dcosx_dqx * tgy + cosx * dtgy_dqx;
     
-    dEdy << 0, (dsinx_dqy * cosy - sinx * dcosy_dqy) * inv_cosy2, (dcosx_dqy * cosy - cosx * dcosy_dqy) * inv_cosy2,
-            0, dcosx_dqy, - dsinx_dqy,
-            0, dsinx_dqy * tgy + sinx * dtgy_dqy, dcosx_dqy * tgy + cosx * dtgy_dqy;
+    dEdy << SCALAR_T(0), (dsinx_dqy * cosy - sinx * dcosy_dqy) * inv_cosy2, (dcosx_dqy * cosy - cosx * dcosy_dqy) * inv_cosy2,
+            SCALAR_T(0), dcosx_dqy, - dsinx_dqy,
+            SCALAR_T(0), dsinx_dqy * tgy + sinx * dtgy_dqy, dcosx_dqy * tgy + cosx * dtgy_dqy;
 
-    dEdz << 0, (dsinx_dqz * cosy - sinx * dcosy_dqz) * inv_cosy2, (dcosx_dqz * cosy - cosx * dcosy_dqz) * inv_cosy2,
-            0, dcosx_dqz, - dsinx_dqz,
-            0, dsinx_dqz * tgy + sinx * dtgy_dqz, dcosx_dqz * tgy + cosx * dtgy_dqz;
+    dEdz << SCALAR_T(0), (dsinx_dqz * cosy - sinx * dcosy_dqz) * inv_cosy2, (dcosx_dqz * cosy - cosx * dcosy_dqz) * inv_cosy2,
+            SCALAR_T(0), dcosx_dqz, - dsinx_dqz,
+            SCALAR_T(0), dsinx_dqz * tgy + sinx * dtgy_dqz, dcosx_dqz * tgy + cosx * dtgy_dqz;
 
-    dEdw << 0, (dsinx_dqw * cosy - sinx * dcosy_dqw) * inv_cosy2, (dcosx_dqw * cosy - cosx * dcosy_dqw) * inv_cosy2,
-            0, dcosx_dqw, - dsinx_dqw,
-            0, dsinx_dqw * tgy + sinx * dtgy_dqw, dcosx_dqw * tgy + cosx * dtgy_dqw;
+    dEdw << SCALAR_T(0), (dsinx_dqw * cosy - sinx * dcosy_dqw) * inv_cosy2, (dcosx_dqw * cosy - cosx * dcosy_dqw) * inv_cosy2,
+            SCALAR_T(0), dcosx_dqw, - dsinx_dqw,
+            SCALAR_T(0), dsinx_dqw * tgy + sinx * dtgy_dqw, dcosx_dqw * tgy + cosx * dtgy_dqw;
 
     return {dEdx, dEdy, dEdz, dEdw};
-  };
+  }
 
-};
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  // Explicit template instantiation
 
+  template Eigen::Quaternion<ocs2::scalar_t> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<ocs2::scalar_t, 3, 1>& eulerAnglesZyx);
+  template Eigen::Quaternion<ocs2::ad_scalar_t> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1>& eulerAnglesZyx);
 
+  template Eigen::Matrix<ocs2::scalar_t, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<ocs2::scalar_t, 3, 1>& eulerAnglesZyx);
+  template Eigen::Matrix<ocs2::ad_scalar_t, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1>& eulerAnglesZyx);
 
+  template std::array<Eigen::Matrix<ocs2::scalar_t, 3, 3>, 4> getRotationMatrixQuaterionGradient(const Eigen::Quaternion<ocs2::scalar_t>& quaterion);
+  template std::array<Eigen::Matrix<ocs2::ad_scalar_t, 3, 3>, 4> getRotationMatrixQuaterionGradient(const Eigen::Quaternion<ocs2::ad_scalar_t>& quaterion);
 
-#endif
+  template Eigen::Matrix<ocs2::scalar_t, 3, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(const Eigen::Matrix<ocs2::scalar_t, 3, 1> &eulerAngles);
+  template Eigen::Matrix<ocs2::ad_scalar_t, 3, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1> &eulerAngles);
+
+  template std::array<Eigen::Matrix<ocs2::scalar_t, 3, 3>, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(const Eigen::Matrix<ocs2::scalar_t, 3, 1> &eulerAngles);
+  template std::array<Eigen::Matrix<ocs2::ad_scalar_t, 3, 3>, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1> &eulerAngles); 
+
+  template Eigen::Matrix<ocs2::scalar_t, 3, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(const Eigen::Quaternion<ocs2::scalar_t>& quaterion);
+  template Eigen::Matrix<ocs2::ad_scalar_t, 3, 3> getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(const Eigen::Quaternion<ocs2::ad_scalar_t>& quaterion);  
+
+  template Eigen::Matrix<ocs2::scalar_t, 3, 4> getRotatedVectorQuaterionGraient(const Eigen::Quaternion<ocs2::scalar_t>& quaterion, const Eigen::Matrix<ocs2::scalar_t, 3, 1> & vector);
+  template Eigen::Matrix<ocs2::ad_scalar_t, 3, 4> getRotatedVectorQuaterionGraient(const Eigen::Quaternion<ocs2::ad_scalar_t>& quaterion, const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1> & vector);
+
+  template std::array<Eigen::Matrix<ocs2::scalar_t, 3, 3>, 4> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(const Eigen::Quaternion<ocs2::scalar_t>& quaterion); 
+  template std::array<Eigen::Matrix<ocs2::ad_scalar_t, 3, 3>, 4> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(const Eigen::Quaternion<ocs2::ad_scalar_t>& quaterion);
+}

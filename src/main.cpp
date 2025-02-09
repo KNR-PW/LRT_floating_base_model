@@ -12,7 +12,7 @@
 
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
 
-#include <floating_base_model/QuaterionTransforms.hpp>
+#include <floating_base_model/QuaterionEulerTransforms.hpp>
 #include <ocs2_centroidal_model/ModelHelperFunctions.h>
 int main()
 {
@@ -109,22 +109,22 @@ int main()
 
 
 
-  Eigen::Vector3d test_vector(1, 2, 3);
-  Eigen::Vector3d euler(1, -1, M_PI/6);
+  Eigen::Vector3d test_vector(3, 5, 7);
+  Eigen::Vector3d euler(-2, -1, 1);
   quaterion = ocs2::getQuaternionFromEulerAnglesZyx(euler);
-  auto dRdq = quaterion_transforms::getRotationMatrixQuaterionGradient(quaterion);
+  auto dRdq = quaterion_euler_transforms::getRotationMatrixQuaterionGradient(quaterion);
   auto dRde = ocs2::getRotationMatrixZyxGradient(euler);
-  auto quaterion_euler_map = quaterion_transforms::getQuaternionFromEulerAnglesZyxGradient(euler);
+  auto quaterion_euler_map = quaterion_euler_transforms::getQuaternionFromEulerAnglesZyxGradient(euler);
 
   auto dRdz_euler = dRde[0];
 
   Eigen::Vector4d dqdz = quaterion_euler_map.leftCols<1>();
   auto dRdz_quaterion = dRdq[0] * dqdz[0] + dRdq[1] * dqdz[1] + dRdq[2] * dqdz[2] + dRdq[3] * dqdz[3];
   std::cout << "NORM: " << (dRdz_euler - dRdz_quaterion).norm() << std::endl;
-  std::cout << quaterion_transforms::test_func_derivative(euler) << std::endl;
-  std::cout << quaterion_transforms::test_func_derivative(quaterion) * quaterion_euler_map << std::endl;
+  std::cout << quaterion_euler_transforms::test_func_derivative(euler) << std::endl;
+  std::cout << quaterion_euler_transforms::test_func_derivative(quaterion) * quaterion_euler_map << std::endl;
   
-  auto dvectordq = quaterion_transforms::getRotatedVectorQuaterionGraient(quaterion, test_vector);
+  auto dvectordq = quaterion_euler_transforms::getRotatedVectorQuaterionGraient(quaterion, test_vector);
 
   Eigen::Matrix3d dvectorde;
   
@@ -135,8 +135,8 @@ int main()
   std::cout << (dvectorde - dvectordq * quaterion_euler_map).norm() << std::endl;
 
 
-  auto dEde = quaterion_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(euler);
-  auto dEdq = quaterion_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(quaterion);
+  auto dEde = quaterion_euler_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(euler);
+  auto dEdq = quaterion_euler_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(quaterion);
   
   Eigen::Matrix3d dvBde;
 

@@ -35,6 +35,7 @@ add_executable(${PROJECT_NAME}
   src/FloatingBaseModelDynamics.cpp
   src/FloatingBaseModelParams.cpp
   src/main.cpp
+  src/QuaterionEulerTransforms.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
 
