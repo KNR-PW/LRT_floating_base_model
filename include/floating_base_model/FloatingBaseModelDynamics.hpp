@@ -88,6 +88,7 @@ class FloatingBaseModelDynamics final
  * @param [in] urdfFilePath: The absolute path to the URDF file for the robot.
  */
 PinocchioInterface makeFloatingBaseInterface(const std::string& urdfFilePath);
+PinocchioInterface makeFloatingBaseInterface2(const std::string& urdfFilePath, const std::string baseFrameName);
 
 
 };  // namespace floating_base_model

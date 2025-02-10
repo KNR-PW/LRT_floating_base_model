@@ -17,7 +17,9 @@
 int main()
 {
   std::string urdfPath = "/home/bartek/meldog.urdf";
+  std::string urdfPath2 = "/home/bartek/meldog_2.urdf";
   ocs2::PinocchioInterface interface = floating_base_model::makeFloatingBaseInterface(urdfPath);
+  ocs2::PinocchioInterface interface2 = floating_base_model::makeFloatingBaseInterface2(urdfPath2, "trunk_link");
   std::vector<std::string> threeDofContactNames;
   std::vector<std::string> sixDofContactNames;
   floating_base_model::FloatingBaseModelParams params(interface, threeDofContactNames, sixDofContactNames);
@@ -168,6 +170,15 @@ int main()
 
   std::cout << "X: " << std::endl;
   std::cout << (dEde[2] - dEdx_quaterion) << std::endl;
+
+  auto model1 = interface.getModel();
+  auto model2 = interface2.getModel();
+
+  if(model1 == model2)
+  {
+    std::cout << "SA TAKIE SAME" << std::endl;
+  }
+
 
   return 0;
 }
