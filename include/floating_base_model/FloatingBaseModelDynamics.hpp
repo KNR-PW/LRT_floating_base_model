@@ -13,7 +13,7 @@
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
 #include <ocs2_centroidal_model/FactoryFunctions.h>
 
-#include <floating_base_model/FloatingBaseModelParams.hpp>
+#include <floating_base_model/FloatingBaseModelInfo.hpp>
 #include <floating_base_model/FloatingBaseGetters.hpp>
 
 using namespace ocs2;
@@ -30,7 +30,7 @@ class FloatingBaseModelDynamics final
    * @param params: Parameters of centroidal model
    * @param interface: Interface for centroidal model
    */
-  FloatingBaseModelDynamics(const FloatingBaseModelParams& params, PinocchioInterface& interface);
+  FloatingBaseModelDynamics(const FloatingBaseModelInfo& params, PinocchioInterface& interface);
 
 
   /**
@@ -74,7 +74,7 @@ class FloatingBaseModelDynamics final
 
 
 
-  const FloatingBaseModelParams& params_;
+  const FloatingBaseModelInfo& params_;
   PinocchioInterface& interface_;
   const Eigen::Matrix<scalar_t, 3, 1> gravityVector_{scalar_t(0), scalar_t(0), scalar_t(-9.81)};
 

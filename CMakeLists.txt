@@ -33,7 +33,8 @@ include_directories(include)
 
 add_executable(${PROJECT_NAME}
   src/FloatingBaseModelDynamics.cpp
-  src/FloatingBaseModelParams.cpp
+  src/FloatingBaseModelInfo.cpp
+  src/FactoryFunctions.cpp
   src/main.cpp
   src/QuaterionEulerTransforms.cpp
 )

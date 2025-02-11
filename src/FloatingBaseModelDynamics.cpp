@@ -3,7 +3,7 @@
 
 using namespace floating_base_model;
 
-FloatingBaseModelDynamics::FloatingBaseModelDynamics(const FloatingBaseModelParams& params, PinocchioInterface& interface):
+FloatingBaseModelDynamics::FloatingBaseModelDynamics(const FloatingBaseModelInfo& params, PinocchioInterface& interface):
 params_{params}, interface_{interface}{ }
 
 
@@ -23,16 +23,18 @@ PinocchioInterface floating_base_model::makeFloatingBaseInterface2(const std::st
   if (urdfTree == nullptr) {
     throw std::invalid_argument("The file " + urdfFilePath + " does not contain a valid URDF model!");
   }
-
+  std::cout << "Size: " << urdfTree->joints_.size() << std::endl;
   // remove extraneous joints from urdf
   std::vector<std::string> jointsToRemoveNames;
   std::vector<std::string> linksToRemoveNames; 
 
   ::urdf::ModelInterfaceSharedPtr newModel = std::make_shared<::urdf::ModelInterface>(*urdfTree);
   auto baseLink = newModel->getLink(baseFrameName);
+  std::cout << baseLink->name << std::endl;
 
   while(baseLink->getParent() != nullptr)
   {
+    std::cout << baseLink->getParent()->name << std::endl;
     linksToRemoveNames.push_back(baseLink->getParent()->name);
     baseLink = baseLink->getParent();
   }
@@ -43,6 +45,7 @@ PinocchioInterface floating_base_model::makeFloatingBaseInterface2(const std::st
     if (std::find(linksToRemoveNames.begin(), linksToRemoveNames.end(), parent_name) != linksToRemoveNames.end()) 
     {
       jointsToRemoveNames.push_back(jointPair.second->name);
+      std::cout << jointPair.second->name << std::endl;
     }
   }
 
@@ -54,6 +57,12 @@ PinocchioInterface floating_base_model::makeFloatingBaseInterface2(const std::st
   for(auto& linkToRemoveName : linksToRemoveNames)
   {
     newModel->links_.erase(linkToRemoveName);
+  }
+
+  for(auto& link : newModel->links_)
+  {
+    link.second->child_joints.clear();
+    link.second->child_links.clear();
   }
   
   std::map<std::string, std::string> parent_link_tree;
@@ -67,6 +76,11 @@ PinocchioInterface floating_base_model::makeFloatingBaseInterface2(const std::st
     newModel.reset();
   }
 
+  for(auto& parent_child : parent_link_tree)
+  {
+    std::cout << "Child: " << parent_child.first << ",Parent: " << parent_child.second << std::endl; 
+  }
+
   try
   {
     newModel->initRoot(parent_link_tree);
@@ -76,9 +90,14 @@ PinocchioInterface floating_base_model::makeFloatingBaseInterface2(const std::st
     std::cout << "Failed to build tree: " << e.what() << std::endl;
     newModel.reset();
   }
+
+  std::cout << "Root: " << newModel->getRoot()->name << std::endl;
+  std::cout << "Name: " << newModel->name_ << std::endl;
+
+  std::cout << "Size: " << newModel->joints_.size() << std::endl;
   
   pinocchio::JointModelFreeFlyer freeFlyerJoint;
-  return getPinocchioInterfaceFromUrdfFile(urdfFilePath, freeFlyerJoint);
+  return getPinocchioInterfaceFromUrdfModel(newModel, freeFlyerJoint);
 }
 
 

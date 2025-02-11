@@ -12,7 +12,6 @@
 
 namespace quaterion_euler_transforms
 {
-
   /**
    * Computes mapping from ZYX euler angles to quaterion
    *

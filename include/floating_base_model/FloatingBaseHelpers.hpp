@@ -4,7 +4,7 @@
 
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
 
-#include <floating_base_model/FloatingBaseModelParams.hpp>
+#include <floating_base_model/FloatingBaseModelInfo.hpp>
 
 namespace floating_base_model 
 {
@@ -33,7 +33,7 @@ namespace floating_base_model
    *       pinocchio::updateFramePlacements(model, data)
    */
   template <typename SCALAR_T>
-  void updateCentroidalDynamics(PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelParams& params,
+  void updateCentroidalDynamics(PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelInfo& params,
                                 const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q);
 
   /**
@@ -50,7 +50,7 @@ namespace floating_base_model
    *       pinocchio::updateFramePlacements(model, data)
    */
   template <typename SCALAR_T>
-  void updateCentroidalDynamicsDerivatives(PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelParams& params,
+  void updateCentroidalDynamicsDerivatives(PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelInfo& params,
                                            const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
                                            const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v);
 
@@ -85,7 +85,7 @@ namespace floating_base_model
    */
   template <typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 6, 3> getCentroidalMomentumZyxGradient(const PinocchioInterfaceTpl<SCALAR_T>& interface,
-                                                                 const FloatingBaseModelParams& params,
+                                                                 const FloatingBaseModelInfo& params,
                                                                  const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
                                                                  const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v);
 
@@ -113,7 +113,7 @@ namespace floating_base_model
    */
   template <typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 3, 1> getPositionComToContactPointInWorldFrame(const PinocchioInterfaceTpl<SCALAR_T>& interface,
-                                                                         const FloatingBaseModelParams& params, size_t contactIndex);
+                                                                         const FloatingBaseModelInfo& params, size_t contactIndex);
 
   /**
    * Computes the CoM to contact point translational Jacobian in world frame
@@ -131,7 +131,7 @@ namespace floating_base_model
   // TODO: Need to copy data here because getFrameJacobian() modifies data. Will be fixed in pinocchio version 3.
   template <typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 3, Eigen::Dynamic> getTranslationalJacobianComToContactPointInWorldFrame(
-      const PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelParams& params, size_t contactIndex);
+      const PinocchioInterfaceTpl<SCALAR_T>& interface, const FloatingBaseModelInfo& params, size_t contactIndex);
 
   /**
    * Computes the derivative of the normalized centroidal momentum (linear + angular) expressed in the centroidal frame
@@ -146,7 +146,7 @@ namespace floating_base_model
    */
   template <typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 6, 1> getNormalizedCentroidalMomentumRate(const PinocchioInterfaceTpl<SCALAR_T>& interface,
-                                                                    const FloatingBaseModelParams* params,
+                                                                    const FloatingBaseModelInfo* params,
                                                                     const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input);
 
 };  // namespace floating_base_model
