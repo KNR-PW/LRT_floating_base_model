@@ -65,8 +65,7 @@ namespace floating_base_model
     }
     catch(::urdf::ParseError &e)
     {
-      std::cout << "Failed to build tree: " << e.what() << std::endl;
-      urdfTree .reset();
+      throw;
     }
 
     try
@@ -75,8 +74,7 @@ namespace floating_base_model
     }
     catch(::urdf::ParseError &e)
     {
-      std::cout << "Failed to build tree: " << e.what() << std::endl;
-      urdfTree .reset();
+      throw;
     }
 
     pinocchio::JointModelFreeFlyer freeFlyerJoint;
