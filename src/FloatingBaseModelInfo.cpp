@@ -11,10 +11,16 @@ namespace floating_base_model
     std::string message;
     message += "|--Definitions of FloatingBase model--|\n";
     message += "State vector definition:\n";
-    message += "x = [base_linear_velocity, base_orientation_zyx_velocity, base_position, base_orientation_zyx,  joint_positions]\n";
+    message += "x = [base_linear_velocity, base_orientation_zyx_velocity, base_position, base_orientation_zyx, joint_positions]\n";
     message += "|-----------------------------------|\n";
     message += "Input vector definition: \n";
     message += "u = [contact_forces, contact_wrenches, joint_velocities]\n";
+    message += "|-----------------------------------|\n";
+    message += "|--Definitions of Pinocchio model--|\n";
+    message += "Joint configuration vector definition:\n";
+    message += "q = [base_position, base_orientation_quaterion, joint_positions]\n";
+    message += "Joint velocity (tangent space) vector definition:\n";
+    message += "v = [base_linear_velocity, base_angular_velocity, joint_velocities]\n";
     message += "|-----------------------------------|\n";
     message += "|--Parameters of FloatingBase model--|\n";
     message += std::string("Number of 3 DOF contacts: ") + std::to_string(info.numThreeDofContacts) + std::string("\n");

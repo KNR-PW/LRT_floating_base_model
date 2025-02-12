@@ -14,7 +14,7 @@
 #include <ocs2_centroidal_model/FactoryFunctions.h>
 
 #include <floating_base_model/FloatingBaseModelInfo.hpp>
-#include <floating_base_model/FloatingBaseGetters.hpp>
+#include <floating_base_model/AccessHelperFunctions.hpp>
 
 using namespace ocs2;
 

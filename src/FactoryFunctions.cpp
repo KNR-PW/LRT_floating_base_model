@@ -96,9 +96,9 @@ namespace floating_base_model
 
     info.numThreeDofContacts = threeDofContactNames.size();
     info.numSixDofContacts = sixDofContactNames.size();
-    info.generalizedCoordinatesNum = model.nq;
-    info.actuatedDofNum = info.generalizedCoordinatesNum - model.joints[1].nq();
-    info.stateDim = info.generalizedCoordinatesNum + model.joints[1].nq();
+    info.generalizedCoordinatesNum = model.nq - 1; // pinocchio freeflyer joint has quaterion angles (4), not Euler ZYX (3)
+    info.actuatedDofNum = info.generalizedCoordinatesNum - model.joints[1].nq() + 1;
+    info.stateDim = info.generalizedCoordinatesNum + model.joints[1].nv(); // pinocchio freeflyer joint has 6 velocity variables
     info.inputDim = info.actuatedDofNum + 3 * info.numThreeDofContacts + 6 * info.numSixDofContacts;
     info.robotMass = pinocchio::computeTotalMass(model);
 
