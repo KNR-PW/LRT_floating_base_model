@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include <urdf_parser/urdf_parser.h>
 

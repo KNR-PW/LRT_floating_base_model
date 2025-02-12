@@ -107,7 +107,7 @@ namespace floating_base_model
       if(threeDofContactFrameIndex == model.frames.size())
       {
         std::cout << "FloatingBaseModelInfo error: Could not find contact frame!" << std::endl;
-        continue;
+        throw std::invalid_argument("Could not find contact frame with name: " + name);
       }
 
       const size_t threeDofContactJointIndex = model.frames[threeDofContactFrameIndex].parentJoint;
@@ -121,7 +121,7 @@ namespace floating_base_model
       if(sixDofContactFrameIndex == model.frames.size())
       {
         std::cout << "FloatingBaseModelInfo error: Could not find contact frame!" << std::endl;
-        continue;
+        throw std::invalid_argument("Could not find contact frame with name: " + name);
       }
       const size_t sixDofContactJointIndex = model.frames[sixDofContactFrameIndex].parentJoint;
   
