@@ -10,46 +10,49 @@ namespace floating_base_model
   ocs2::PinocchioInterface createPinocchioInterface(const std::string& urdfFilePath, const std::string& baseLinkName)
   {
     using joint_pair_t = std::pair<const std::string, std::shared_ptr<::urdf::Joint>>;
-    using link_pair_t = std::pair<const std::string, std::shared_ptr<::urdf::Link>>;
 
+    // Get model from file
     ::urdf::ModelInterfaceSharedPtr urdfTree = ::urdf::parseURDFFile(urdfFilePath);
     if (urdfTree == nullptr) {
       throw std::invalid_argument("The file " + urdfFilePath + " does not contain a valid URDF model!");
     }
     // remove extraneous joints from urdf
-    std::vector<std::string> jointsToRemoveNames;
-    std::vector<std::string> linksToRemoveNames; 
+    std::vector<std::string> jointsToRemove;
+    std::vector<std::string> linksToRemove; 
 
-    ::urdf::ModelInterfaceSharedPtr newModel = std::make_shared<::urdf::ModelInterface>(*urdfTree);
-    auto baseLink = newModel->getLink(baseLinkName);
+    ::urdf::LinkConstSharedPtr baseLink = urdfTree ->getLink(baseLinkName);
 
+    // Get all parents of Base Link
     while(baseLink->getParent() != nullptr)
     {
-      linksToRemoveNames.push_back(baseLink->getParent()->name);
+      linksToRemove.push_back(baseLink->getParent()->name);
       baseLink = baseLink->getParent();
     }
 
-    for (joint_pair_t& jointPair : newModel->joints_) 
+    // Get all joints before Base Link
+    for (joint_pair_t& jointPair : urdfTree ->joints_) 
     {
       std::string parent_name = jointPair.second->parent_link_name;
-      if (std::find(linksToRemoveNames.begin(), linksToRemoveNames.end(), parent_name) != linksToRemoveNames.end()) 
+      if (std::find(linksToRemove.begin(), linksToRemove.end(), parent_name) != linksToRemove.end()) 
       {
-        jointsToRemoveNames.push_back(jointPair.second->name);
+        jointsToRemove.push_back(jointPair.second->name);
         std::cout << jointPair.second->name << std::endl;
       }
     }
 
-    for(auto& jointToRemoveName : jointsToRemoveNames)
+    // Remove parents and their joints from tree
+    for(auto& jointToRemoveName : jointsToRemove)
     {
-      newModel->joints_.erase(jointToRemoveName);
+      urdfTree ->joints_.erase(jointToRemoveName);
     }
 
-    for(auto& linkToRemoveName : linksToRemoveNames)
+    for(auto& linkToRemoveName : linksToRemove)
     {
-      newModel->links_.erase(linkToRemoveName);
+      urdfTree ->links_.erase(linkToRemoveName);
     }
 
-    for(auto& link : newModel->links_)
+    // Remove child joints and links to prepare tree for initTree()
+    for(auto& link : urdfTree ->links_)
     {
       link.second->child_joints.clear();
       link.second->child_links.clear();
@@ -58,26 +61,26 @@ namespace floating_base_model
     std::map<std::string, std::string> parent_link_tree;
     try
     {
-      newModel->initTree(parent_link_tree);
+      urdfTree ->initTree(parent_link_tree);
     }
     catch(::urdf::ParseError &e)
     {
       std::cout << "Failed to build tree: " << e.what() << std::endl;
-      newModel.reset();
+      urdfTree .reset();
     }
 
     try
     {
-      newModel->initRoot(parent_link_tree);
+      urdfTree ->initRoot(parent_link_tree);
     }
     catch(::urdf::ParseError &e)
     {
       std::cout << "Failed to build tree: " << e.what() << std::endl;
-      newModel.reset();
+      urdfTree .reset();
     }
 
     pinocchio::JointModelFreeFlyer freeFlyerJoint;
-    return ocs2::getPinocchioInterfaceFromUrdfModel(newModel, freeFlyerJoint);
+    return ocs2::getPinocchioInterfaceFromUrdfModel(urdfTree , freeFlyerJoint);
   }
 
   /******************************************************************************************************/
@@ -89,8 +92,7 @@ namespace floating_base_model
   {
 
     FloatingBaseModelInfo info;
-    const auto& model = interface.getModel();
-    auto data = interface.getData();
+    const pinocchio::Model& model = interface.getModel();
 
     info.numThreeDofContacts = threeDofContactNames.size();
     info.numSixDofContacts = sixDofContactNames.size();
@@ -101,12 +103,33 @@ namespace floating_base_model
     info.robotMass = pinocchio::computeTotalMass(model);
 
     for (const auto& name : threeDofContactNames) {
-      info.endEffectorFrameIndices.push_back(model.getBodyId(name));
+      const size_t threeDofContactFrameIndex = model.getFrameId(name);
+      if(threeDofContactFrameIndex == model.frames.size())
+      {
+        std::cout << "FloatingBaseModelInfo error: Could not find contact frame!" << std::endl;
+        continue;
+      }
+
+      const size_t threeDofContactJointIndex = model.frames[threeDofContactFrameIndex].parentJoint;
+  
+      info.endEffectorFrameIndices.push_back(threeDofContactFrameIndex);
+      info.endEffectorJointIndices.push_back(threeDofContactJointIndex);
     }
 
     for (const auto& name : sixDofContactNames) {
-      info.endEffectorFrameIndices.push_back(model.getBodyId(name));
+      const size_t sixDofContactFrameIndex = model.getFrameId(name);
+      if(sixDofContactFrameIndex == model.frames.size())
+      {
+        std::cout << "FloatingBaseModelInfo error: Could not find contact frame!" << std::endl;
+        continue;
+      }
+      const size_t sixDofContactJointIndex = model.frames[sixDofContactFrameIndex].parentJoint;
+  
+      info.endEffectorFrameIndices.push_back(sixDofContactFrameIndex);
+      info.endEffectorJointIndices.push_back(sixDofContactJointIndex);
     }
+
+    return info;
   }
 
 } // namespace floating_base_model

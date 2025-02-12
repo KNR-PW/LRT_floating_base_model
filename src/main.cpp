@@ -24,11 +24,21 @@ int main()
   ocs2::PinocchioInterface interface2 = floating_base_model::makeFloatingBaseInterface2(urdfPath, "trunk_link");
   std::vector<std::string> threeDofContactNames;
   std::vector<std::string> sixDofContactNames;
-  threeDofContactNames.clear();
-  sixDofContactNames.clear();
-  floating_base_model::FloatingBaseModelInfo info = floating_base_model::createFloatingBaseModelInfo(interface, threeDofContactNames, sixDofContactNames);
+  threeDofContactNames.push_back("RFF_link");
+  threeDofContactNames.push_back("RRF_link");
+  threeDofContactNames.push_back("LFF_link");
+  threeDofContactNames.push_back("LRF_link");
+  floating_base_model::FloatingBaseModelInfo info = floating_base_model::createFloatingBaseModelInfo(interface2, threeDofContactNames, sixDofContactNames);
   std::cout << interface << std::endl;
   std::cout << info << std::endl;
+  
+  for(int i = 0; i < info.endEffectorFrameIndices.size(); ++i)
+  {
+    std::cout << "Contact Frame: " << threeDofContactNames[i] << ", " << info.endEffectorFrameIndices[i] << std::endl;
+    std::cout << "Contact Joint: " << interface2.getModel().names[info.endEffectorJointIndices[i]] << ", " << info.endEffectorJointIndices[i] << std::endl;
+  }
+
+  floating_base_model::FloatingBaseModelInfoCppAd info_ad = info.toCppAd();
 
   // const auto& model = interface.getModel();
   // auto& data = interface.getData();

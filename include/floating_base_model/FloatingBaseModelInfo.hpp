@@ -40,6 +40,7 @@ namespace floating_base_model
     size_t numThreeDofContacts;                   // 3DOF contacts, force only
     size_t numSixDofContacts;                     // 6DOF contacts, force and torque
     std::vector<size_t> endEffectorFrameIndices;  // indices of end-effector frames [3DOF contacts, 6DOF contacts]
+    std::vector<size_t> endEffectorJointIndices;  // indices of end-effector parent joints [3DOF contacts, 6DOF contacts]
     size_t generalizedCoordinatesNum;             // number of generalized coordinates in the pinocchio model
     size_t actuatedDofNum;                        // number of actuated degrees of freedom
     size_t stateDim;                              // number of states needed to define the system flow map
