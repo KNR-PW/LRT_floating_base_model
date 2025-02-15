@@ -1,4 +1,3 @@
-#include <floating_base_model/FloatingBaseModelDynamics.hpp>
 #include <ocs2_pinocchio_interface/urdf.h>
 #include <urdf_parser/urdf_parser.h>
 #include <pinocchio/algorithm/centroidal.hpp>
@@ -9,54 +8,148 @@
 
 #include <pinocchio/algorithm/rnea-derivatives.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/center-of-mass.hpp>
+#include <pinocchio/algorithm/center-of-mass-derivatives.hpp>
 
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
 
-#include <floating_base_model/QuaterionEulerTransforms.hpp>
+
 #include <ocs2_centroidal_model/ModelHelperFunctions.h>
+#include <floating_base_model/ModelHelperFunctions.hpp>
 
 #include <floating_base_model/FactoryFunctions.hpp>
+#include <floating_base_model/QuaterionEulerTransforms.hpp>
+//#include <floating_base_model/FloatingBaseModelDynamics.hpp>
+
+
+#include <chrono>
+
 int main()
 {
   std::string urdfPath = "/home/bartek/meldog.urdf";
   std::string urdfPath2 = "/home/bartek/meldog_2.urdf";
-  ocs2::PinocchioInterface interface = floating_base_model::makeFloatingBaseInterface(urdfPath);
-  ocs2::PinocchioInterface interface2 = floating_base_model::makeFloatingBaseInterface2(urdfPath, "trunk_link");
+  ocs2::PinocchioInterface interface = floating_base_model::createPinocchioInterface(urdfPath2, "trunk_link");
   std::vector<std::string> threeDofContactNames;
   std::vector<std::string> sixDofContactNames;
   threeDofContactNames.push_back("RFF_link");
   threeDofContactNames.push_back("RRF_link");
   threeDofContactNames.push_back("LFF_link");
   threeDofContactNames.push_back("LRF_link");
-  floating_base_model::FloatingBaseModelInfo info = floating_base_model::createFloatingBaseModelInfo(interface2, threeDofContactNames, sixDofContactNames);
+  floating_base_model::FloatingBaseModelInfo info = floating_base_model::createFloatingBaseModelInfo(interface, threeDofContactNames, sixDofContactNames);
   std::cout << interface << std::endl;
   std::cout << info << std::endl;
   
   for(int i = 0; i < info.endEffectorFrameIndices.size(); ++i)
   {
     std::cout << "Contact Frame: " << threeDofContactNames[i] << ", " << info.endEffectorFrameIndices[i] << std::endl;
-    std::cout << "Contact Joint: " << interface2.getModel().names[info.endEffectorJointIndices[i]] << ", " << info.endEffectorJointIndices[i] << std::endl;
+    std::cout << "Contact Joint: " << interface.getModel().names[info.endEffectorJointIndices[i]] << ", " << info.endEffectorJointIndices[i] << std::endl;
   }
 
-  floating_base_model::FloatingBaseModelInfoCppAd info_ad = info.toCppAd();
+  //floating_base_model::FloatingBaseModelInfoCppAd info_ad = info.toCppAd();
 
-  // const auto& model = interface.getModel();
-  // auto& data = interface.getData();
-  // Eigen::Vector<scalar_t, Eigen::Dynamic> q = Eigen::Vector<scalar_t, Eigen::Dynamic>::Ones(model.nq);
-  // Eigen::Quaternion quaterion(q[6], q[3], q[4], q[5]);
-  // quaterion.normalize();
-  // q[3] = quaterion.x();
-  // q[4] = quaterion.y();
-  // q[5] = quaterion.z();
-  // q[6] = quaterion.w();
-  // Eigen::Vector<scalar_t, Eigen::Dynamic> dq = Eigen::Vector<scalar_t, Eigen::Dynamic>::Ones(model.nv);
-  // Eigen::Vector<scalar_t, Eigen::Dynamic> tau = Eigen::Vector<scalar_t, Eigen::Dynamic>::Zero(model.nv);
+  const auto& model = interface.getModel();
+  auto& data = interface.getData();
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> q = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Ones(model.nq);
+  Eigen::Quaternion quaterion(q[6], q[3], q[4], q[5]);
+  quaterion.normalize();
+  q[3] = quaterion.x();
+  q[4] = quaterion.y();
+  q[5] = quaterion.z();
+  q[6] = quaterion.w();
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> dq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Ones(model.nv);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> tau = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Zero(model.nv);
 
+  pinocchio::forwardKinematics(model, data, q);
+  pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
+
+  Eigen::Matrix<double, 6, 6> Mb_1 = data.M.block<6,6>(0, 0);
+
+  q = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nq);
+  Eigen::Quaternion quaterion2(q[6], q[3], q[4], q[5]);
+  quaterion2.normalize();
+  q[3] = quaterion2.x();
+  q[4] = quaterion2.y();
+  q[5] = quaterion2.z();
+  q[6] = quaterion2.w();
+
+  pinocchio::forwardKinematics(model, data, q);
+  auto start = std::chrono::high_resolution_clock::now();
+  for(int i = 0; i < 1000; ++i)
+  {
+    pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
+  }
+  auto stop = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  std::cout << "Algo1: " << duration.count() << std::endl;
+  Eigen::Matrix<double, 6, 6> Mb_2 = data.M.block<6,6>(0, 0);
+
+  std::cout << "MB1:" << std::endl;
+  std::cout << Mb_1 << std::endl;
+
+  std::cout << "MB2:" << std::endl;
+  std::cout << Mb_2 << std::endl;
+
+  std::cout << "MB1 - MB2:" << std::endl;
+  std::cout << Mb_1 - Mb_2 << std::endl;
+
+  pinocchio::centerOfMass(model, data, true);
+  Eigen::Vector3d r_com = data.com[1];
+  // DZIALA!!!!!!
+  start = std::chrono::high_resolution_clock::now();
+  for(int j = 0; j < 1000; ++j)
+  {
+    pinocchio::Inertia inertia;
+    Eigen::Matrix<double, 6, 6> Mb_moje;
+    std::vector<pinocchio::SE3> bMi(model.njoints);
+    bMi[1] = pinocchio::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+    inertia = model.inertias[1];
+    for(int i = 2; i < model.njoints; ++i)
+    {
+      int parent = model.parents[i];
+      bMi[i] = bMi[parent] * data.liMi[i];
+      inertia += bMi[i].act(model.inertias[i]);
+    }
+    Mb_moje = inertia.matrix();
+  }
+  stop = std::chrono::high_resolution_clock::now();
+  duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  std::cout << "Algo2: " << duration.count() << std::endl;
+
+  // std::cout << "MB_moje - MB2:" << std::endl;
+  // std::cout << (Mb_moje - Mb_2).norm() << std::endl;
+  // std::cout << Mb_moje - Mb_2 << std::endl;
+
+  // FAIL :(
+  Eigen::Matrix3d inertia_B;
+  inertia_B = model.inertias[1].inertia();
+  std::vector<pinocchio::SE3> bMi(model.njoints);
+  bMi[1] = pinocchio::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+  for(int i = 2; i < model.njoints; ++i)
+  {
+    int parent = model.parents[i];
+    bMi[i] = bMi[parent] * data.liMi[i];
+    inertia_B += bMi[i].rotation() * model.inertias[i].inertia().matrix() * bMi[i].rotation().transpose() + model.inertias[i].mass() * ocs2::skewSymmetricMatrix(bMi[i].translation()) * ocs2::skewSymmetricMatrix(bMi[i].translation()).transpose();
+  }
+
+
+  std::cout << "TEST: " << std::endl;
+  std::cout << (Mb_2.block<3,3>(3,0) - info.robotMass * ocs2::skewSymmetricMatrix(r_com)).norm() << std::endl;
+  std::cout << (Mb_2.block<3,3>(0,3) + info.robotMass * ocs2::skewSymmetricMatrix(r_com)).norm() << std::endl;
+  std::cout << Mb_2.block<3,3>(3,3) - inertia_B << std::endl;
+
+  auto Mb_inv = floating_base_model::computeFloatingBaseLockedInertiaInverse(Mb_2);
+  std::cout << "TEST ODWROTNOSC MB: " << std::endl;
+  std::cout << Mb_inv * Mb_2 << std::endl;
+  std::cout << Mb_2 << std::endl;
+  std::cout << Mb_inv << std::endl;
+
+  std::cout << Mb_inv.block<3,3>(3,0) * Mb_2.block<3,3>(0,3) + Mb_inv.block<3,3>(3,3) * Mb_2.block<3,3>(3,3) << std::endl;
   // pinocchio::Force force_1;
   // pinocchio::Force force_2;
   // pinocchio::Force force_3;
   // pinocchio::Force force_4;
-  // // force_1.linear(Eigen::Vector<scalar_t, 3>(1.0, 1.0, 1.0));
+  // // force_1.linear(Eigen::Vector<ocs2::scalar_t, 3>(1.0, 1.0, 1.0));
 
   // // std::string feetLinkName = "LFF_link";
   // // size_t feetId = model.getFrameId(feetLinkName);
@@ -121,7 +214,7 @@ int main()
 
   // // auto quaterion_2 = ocs2::matrixToQuaternion(data.oMi[1].rotation());
   // // std::cout << quaterion_2 << std::endl;
-  // // Eigen::Vector<scalar_t, Eigen::Dynamic> error = data.nle - data.g - data.C*dq;
+  // // Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> error = data.nle - data.g - data.C*dq;
   // // std::cout << "Error: " << error.norm() << std::endl;
 
 
@@ -186,22 +279,22 @@ int main()
   // std::cout << "X: " << std::endl;
   // std::cout << (dEde[2] - dEdx_quaterion) << std::endl;
 
-  auto model1 = interface.getModel();
-  auto model2 = interface2.getModel();
+  // auto model1 = interface.getModel();
+  // auto model2 = interface2.getModel();
 
-  if(model1 == model2)
-  {
-    std::cout << "SA TAKIE SAME" << std::endl;
-  }
-  else
-  {
-    std::cout << model1.nframes << std::endl;
-    std::cout << model2.nframes << std::endl;
-    std::cout << model1.njoints << std::endl;
-    std::cout << model2.njoints << std::endl;
-    std::cout << model1.nbodies << std::endl;
-    std::cout << model2.nbodies << std::endl;
-  }
+  // if(model1 == model2)
+  // {
+  //   std::cout << "SA TAKIE SAME" << std::endl;
+  // }
+  // else
+  // {
+  //   std::cout << model1.nframes << std::endl;
+  //   std::cout << model2.nframes << std::endl;
+  //   std::cout << model1.njoints << std::endl;
+  //   std::cout << model2.njoints << std::endl;
+  //   std::cout << model1.nbodies << std::endl;
+  //   std::cout << model2.nbodies << std::endl;
+  // }
 
 
   return 0;

@@ -1,5 +1,5 @@
-#ifndef __FLOATING_BASE_GETTERS__
-#define __FLOATING_BASE_GETTERS__
+#ifndef __FLOATING_BASE_ACCESS_HELPER_FUNCTIONS__
+#define __FLOATING_BASE_ACCESS_HELPER_FUNCTIONS__
 
 #include <Eigen/Core>
 #include <floating_base_model/FloatingBaseModelInfo.hpp>
