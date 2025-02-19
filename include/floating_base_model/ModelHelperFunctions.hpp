@@ -1,5 +1,5 @@
-#ifndef __FLOATING_BASE_HELPERS__
-#define __FLOATING_BASE_HELPERS__
+#ifndef __FLOATING_BASE_HELPER_FUNCTIONS__
+#define __FLOATING_BASE_HELPER_FUNCTIONS__
 
 
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
@@ -8,20 +8,21 @@
 
 namespace floating_base_model 
 {
-
-  /**
-   * Get the inverse of locked 6D rigid body inertia of the multi-body system Mb.
-   * Mb = [m * I_{3,3},           - m * [r_com],
-   *       m * [r_com],  Ic - m * [r_com] * [r_com]]
-   * 
-   *  Mb_inv = [ 1/m I_{3,3} - [r_com] * Ic_inv * cx,    -Ic_inv * [r_com],,
-   *             [r_com] * Ic_inv,                         Ic_inv]
-   *
-   * @param [in] Mb(q): locked 6D rigid body inertia of the multi-body system
-   * @return Mb_inv(q): inverse of the 6x6 left-block of Mb(q)
-   */
-  template <typename SCALAR_T>
-  Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertiaInverse(const Eigen::Matrix<SCALAR_T, 6, 6>& Mb);
+  namespace model_helper_functions
+  {
+    /**
+     * Get the inverse of locked 6D rigid body inertia of the multi-body system Mb.
+     * Mb = [m * I_{3,3},           - m * [r_com],
+     *       m * [r_com],  Ic - m * [r_com] * [r_com]]
+     * 
+     *  Mb_inv = [ 1/m I_{3,3} - [r_com] * Ic_inv * cx,    -Ic_inv * [r_com],,
+     *             [r_com] * Ic_inv,                         Ic_inv]
+     *
+     * @param [in] Mb(q): locked 6D rigid body inertia of the multi-body system
+     * @return Mb_inv(q): inverse of the 6x6 left-block of Mb(q)
+     */
+    template <typename SCALAR_T>
+    Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertiaInverse(const Eigen::Matrix<SCALAR_T, 6, 6>& Mb);
 
   // /**
   //  * Updates the centroidal momentum matrix in data.Ag and the CoM position in data.com[0] for the FullCentroidalDynamics
@@ -151,7 +152,7 @@ namespace floating_base_model
   // Eigen::Matrix<SCALAR_T, 6, 1> getNormalizedCentroidalMomentumRate(const PinocchioInterfaceTpl<SCALAR_T>& interface,
   //                                                                   const FloatingBaseModelInfo* params,
   //                                                                   const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input);
-
+  }; // namespace model_helper_functions
 };  // namespace floating_base_model
 
 #include "implementation/ModelHelperFunctions.hxx"
