@@ -16,7 +16,7 @@ namespace floating_base_model
   using FloatingBaseModelPinocchioMappingCppAd = FloatingBaseModelPinocchioMappingTpl<ocs2::ad_scalar_t>;
 
   /**
-   * Floating Base Model Dynamics:
+   * Floating Base Dynamics:
    *
    * State: x = [ base_linear_velocity, base_angular_velocity, base_position, base_orientation_zyx, joint_positions ]'
    * @remark: The base classical linear and angular velocities are expressed in base frame of reference,
@@ -89,7 +89,7 @@ namespace floating_base_model
       /**
        * Returns a structure containing robot-specific information needed for the floating base dynamics computations.
        */
-      const FloatingBaseModelInfoTpl<SCALAR_T>& getCentroidalModelInfo() const { return floatingBaseModelInfo_; }
+      const FloatingBaseModelInfoTpl<SCALAR_T>& getFloatingBaseModelInfo() const { return floatingBaseModelInfo_; }
 
     private:
       FloatingBaseModelPinocchioMappingTpl(const FloatingBaseModelPinocchioMappingTpl& rhs);

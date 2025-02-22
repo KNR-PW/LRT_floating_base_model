@@ -11,6 +11,9 @@
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/algorithm/center-of-mass.hpp>
 #include <pinocchio/algorithm/center-of-mass-derivatives.hpp>
+#include <pinocchio/algorithm/kinematics-derivatives.hpp>
+#include <pinocchio/algorithm/frames-derivatives.hpp>
+#include <pinocchio/algorithm/kinematics.hpp>
 
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
 
@@ -20,6 +23,7 @@
 
 #include <floating_base_model/FactoryFunctions.hpp>
 #include <floating_base_model/QuaterionEulerTransforms.hpp>
+#include <floating_base_model/AccessHelperFunctions.hpp>
 //#include <floating_base_model/FloatingBaseModelDynamics.hpp>
 
 
@@ -50,15 +54,16 @@ int main()
 
   const auto& model = interface.getModel();
   auto& data = interface.getData();
-  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> q = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Ones(model.nq);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> q = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nq);
   Eigen::Quaternion quaterion(q[6], q[3], q[4], q[5]);
   quaterion.normalize();
   q[3] = quaterion.x();
   q[4] = quaterion.y();
   q[5] = quaterion.z();
   q[6] = quaterion.w();
-  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> dq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Ones(model.nv);
-  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> tau = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Zero(model.nv);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> dq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> tau = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> ddq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
 
   pinocchio::forwardKinematics(model, data, q);
   pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
@@ -82,35 +87,25 @@ int main()
   auto stop = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
   std::cout << "Algo1: " << duration.count() << std::endl;
-  Eigen::Matrix<double, 6, 6> Mb_2 = data.M.block<6,6>(0, 0);
+  // Eigen::Matrix<double, 6, 6> Mb_2 = data.M.block<6,6>(0, 0);
 
-  std::cout << "MB1:" << std::endl;
-  std::cout << Mb_1 << std::endl;
+  // std::cout << "MB1:" << std::endl;
+  // std::cout << Mb_1 << std::endl;
 
-  std::cout << "MB2:" << std::endl;
-  std::cout << Mb_2 << std::endl;
+  // std::cout << "MB2:" << std::endl;
+  // std::cout << Mb_2 << std::endl;
 
-  std::cout << "MB1 - MB2:" << std::endl;
-  std::cout << Mb_1 - Mb_2 << std::endl;
+  // std::cout << "MB1 - MB2:" << std::endl;
+  // std::cout << Mb_1 - Mb_2 << std::endl;
 
-  pinocchio::centerOfMass(model, data, true);
-  Eigen::Vector3d r_com = data.com[1];
-  // DZIALA!!!!!!
+  // pinocchio::centerOfMass(model, data, true);
+  // Eigen::Vector3d r_com = data.com[1];
+  // // DZIALA!!!!!!
+  Eigen::Matrix<double, 6, 6> Mb_moje;
   start = std::chrono::high_resolution_clock::now();
   for(int j = 0; j < 1000; ++j)
   {
-    pinocchio::Inertia inertia;
-    Eigen::Matrix<double, 6, 6> Mb_moje;
-    std::vector<pinocchio::SE3> bMi(model.njoints);
-    bMi[1] = pinocchio::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
-    inertia = model.inertias[1];
-    for(int i = 2; i < model.njoints; ++i)
-    {
-      int parent = model.parents[i];
-      bMi[i] = bMi[parent] * data.liMi[i];
-      inertia += bMi[i].act(model.inertias[i]);
-    }
-    Mb_moje = inertia.matrix();
+    Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
   }
   stop = std::chrono::high_resolution_clock::now();
   duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
@@ -121,30 +116,29 @@ int main()
   // std::cout << Mb_moje - Mb_2 << std::endl;
 
   // FAIL :(
-  Eigen::Matrix3d inertia_B;
-  inertia_B = model.inertias[1].inertia();
-  std::vector<pinocchio::SE3> bMi(model.njoints);
-  bMi[1] = pinocchio::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
-  for(int i = 2; i < model.njoints; ++i)
-  {
-    int parent = model.parents[i];
-    bMi[i] = bMi[parent] * data.liMi[i];
-    inertia_B += bMi[i].rotation() * model.inertias[i].inertia().matrix() * bMi[i].rotation().transpose() + model.inertias[i].mass() * ocs2::skewSymmetricMatrix(bMi[i].translation()) * ocs2::skewSymmetricMatrix(bMi[i].translation()).transpose();
-  }
+  // Eigen::Matrix3d inertia_B;
+  // inertia_B = model.inertias[1].inertia();
+  // std::vector<pinocchio::SE3> bMi(model.njoints);
+  // bMi[1] = pinocchio::SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+  // for(int i = 2; i < model.njoints; ++i)
+  // {
+  //   int parent = model.parents[i];
+  //   bMi[i] = bMi[parent] * data.liMi[i];
+  //   inertia_B += bMi[i].rotation() * model.inertias[i].inertia().matrix() * bMi[i].rotation().transpose() + model.inertias[i].mass() * ocs2::skewSymmetricMatrix(bMi[i].translation()) * ocs2::skewSymmetricMatrix(bMi[i].translation()).transpose();
+  // }
 
 
-  std::cout << "TEST: " << std::endl;
-  std::cout << (Mb_2.block<3,3>(3,0) - info.robotMass * ocs2::skewSymmetricMatrix(r_com)).norm() << std::endl;
-  std::cout << (Mb_2.block<3,3>(0,3) + info.robotMass * ocs2::skewSymmetricMatrix(r_com)).norm() << std::endl;
-  std::cout << Mb_2.block<3,3>(3,3) - inertia_B << std::endl;
+  // std::cout << "TEST: " << std::endl;
+  // std::cout << (Mb_2.block<3,3>(3,0) - info.robotMass * ocs2::skewSymmetricMatrix(r_com)).norm() << std::endl;
+  // std::cout << (Mb_2.block<3,3>(0,3) + info.robotMass * ocs2::skewSymmetricMatrix(r_com)).norm() << std::endl;
+  // std::cout << Mb_2.block<3,3>(3,3) - inertia_B << std::endl;
+  // auto Mb_inv = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertiaInverse(Mb_2);
+  // std::cout << "TEST ODWROTNOSC MB: " << std::endl;
+  // std::cout << Mb_inv * Mb_2 << std::endl;
+  // std::cout << Mb_2 << std::endl;
+  // std::cout << Mb_inv << std::endl;
 
-  auto Mb_inv = floating_base_model::computeFloatingBaseLockedInertiaInverse(Mb_2);
-  std::cout << "TEST ODWROTNOSC MB: " << std::endl;
-  std::cout << Mb_inv * Mb_2 << std::endl;
-  std::cout << Mb_2 << std::endl;
-  std::cout << Mb_inv << std::endl;
-
-  std::cout << Mb_inv.block<3,3>(3,0) * Mb_2.block<3,3>(0,3) + Mb_inv.block<3,3>(3,3) * Mb_2.block<3,3>(3,3) << std::endl;
+  // std::cout << Mb_inv.block<3,3>(3,0) * Mb_2.block<3,3>(0,3) + Mb_inv.block<3,3>(3,3) * Mb_2.block<3,3>(3,3) << std::endl;
   // pinocchio::Force force_1;
   // pinocchio::Force force_2;
   // pinocchio::Force force_3;
@@ -295,6 +289,98 @@ int main()
   //   std::cout << model1.nbodies << std::endl;
   //   std::cout << model2.nbodies << std::endl;
   // }
+
+  // Eigen::MatrixXd v_partial_dq(6, model.nv);
+  // Eigen::MatrixXd v_partial_dv(6, model.nv);
+  // pinocchio::computeForwardKinematicsDerivatives(model, data, q, dq, ddq);
+  // pinocchio::getJointVelocityDerivatives(model, data, 1, pinocchio::LOCAL, v_partial_dq, v_partial_dv);
+  // std::cout << "v_partial_dq: " << std::endl;
+  // std::cout << v_partial_dq.leftCols(6) << std::endl;
+  // std::cout << "v_partial_dv: " << std::endl;
+  // std::cout << v_partial_dv.leftCols(6) << std::endl;
+
+  // int frame_id = model.getFrameId("trunk_link");
+  // Eigen::MatrixXd frame_v_partial_dq(6, model.nv);
+  // frame_v_partial_dq.setZero();
+  // Eigen::MatrixXd frame_v_partial_dv(6, model.nv);
+  // frame_v_partial_dv.setZero();
+  // pinocchio::computeForwardKinematicsDerivatives(model, data, q, dq, ddq);
+  // pinocchio::getFrameVelocityDerivatives(model, data, frame_id, pinocchio::LOCAL, frame_v_partial_dq, frame_v_partial_dv);
+  // std::cout << "frame_v_partial_dq: " << std::endl;
+  // std::cout << frame_v_partial_dq << std::endl;
+  // std::cout << "frame_v_partial_dv: " << std::endl;
+  // std::cout << frame_v_partial_dv.leftCols(6)<< std::endl;
+  
+  // pinocchio::forwardKinematics(model, data, q);
+  // auto frame_vel = pinocchio::getFrameVelocity(model, data, frame_id, pinocchio::WORLD);
+  // std::cout << "TESTY:\n";
+  // std::cout << data.oMi[1] << std::endl;
+  // std::cout << data.oMf[frame_id] << std::endl;
+  // std::cout << data.v[1] << std::endl;
+  // std::cout << frame_vel << std::endl;
+
+  // std::cout << model.frames[frame_id].placement << std::endl;
+
+  // Eigen::MatrixXd frame_v_partial_dq_2(6, model.nv);
+  // pinocchio::motionSet::se3Action(data.oMi[1],frame_v_partial_dq, frame_v_partial_dq_2);
+  // std::cout << "frame_v_partial_dq local: " << std::endl;
+  // std::cout << frame_v_partial_dq_2 << std::endl;
+
+  // std::cout << model.parents[1] << std::endl;
+
+
+
+  // Eigen::Vector3d wB = Eigen::Vector3d::Random();
+  // std::cout << "wB:\n" << wB << std::endl;
+
+  // Eigen::Vector3d eulerAngles = Eigen::Vector3d::Random();
+  // std::cout << "euler:\n" << eulerAngles << std::endl;
+
+  // auto dEd_euler = quaterion_euler_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeZyxGradient(eulerAngles);
+  // auto E = quaterion_euler_transforms::getMappingFromLocalAngularVelocitytoEulerAnglesDerivative(eulerAngles);
+  // Eigen::Matrix3d E_inv = E.inverse();
+
+  // Eigen::Vector3d deuler = E * wB;
+  // auto wB_skew = ocs2::skewSymmetricMatrix(wB);
+  
+
+  // Eigen::Matrix3d test_1 = - E * wB_skew * E_inv;
+  // Eigen::Matrix3d test_1_2;
+  // test_1_2.col(0) = dEd_euler[0] * deuler;
+  // test_1_2.col(1) = dEd_euler[1] * deuler;
+  // test_1_2.col(2) = dEd_euler[2] * deuler;
+  // Eigen::Matrix3d test_3 = test_1_2 * E_inv + test_1; 
+  // Eigen::Matrix3d test_2 = Eigen::Matrix3d::Zero();
+  // test_2.col(0) = dEd_euler[0] * wB;
+  // test_2.col(1) = dEd_euler[1] * wB;
+  // test_2.col(2) = dEd_euler[2] * wB;
+
+  // std::cout << "PLEASE1: " << std::endl;
+  // std::cout << test_1 << std::endl;
+  // std::cout << "POPRAWNE: " << std::endl;
+  // std::cout << test_2 << std::endl;
+
+  // std::cout << "PLEASE2: " << std::endl;
+  // std::cout << test_1_2 << std::endl;
+
+
+
+
+  pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
+  Eigen::Matrix<double, 6, 6> Mb_p = data.M.block<6,6>(0, 0);
+
+  auto Mb_inv = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertiaInverse(Mb_p);
+
+  Eigen::Vector<double, 6> tau_base = tau.block<6, 1>(0, 0);
+
+  auto my_acceleration = floating_base_model::model_helper_functions::computeBaseBodyAcceleration(Mb_p, tau_base);
+
+  std::cout << Mb_p.inverse() * tau_base - my_acceleration << std::endl;
+  std::cout << Mb_p.inverse() * tau_base - Mb_inv * tau_base << std::endl;
+
+  //auto Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
+
+  std::cout << Mb_p - Mb_moje << std::endl;
 
 
   return 0;

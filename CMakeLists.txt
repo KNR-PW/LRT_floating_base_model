@@ -32,12 +32,12 @@ endforeach()
 include_directories(include)
 
 add_executable(${PROJECT_NAME}
-  # src/FloatingBaseModelDynamics.cpp
   src/FloatingBaseModelInfo.cpp
   src/FactoryFunctions.cpp
-  src/main.cpp
   src/QuaterionEulerTransforms.cpp
   src/FloatingBaseModelPinocchioMapping.cpp
+  src/PinocchioFloatingBaseDynamics.cpp
+  src/main.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
 

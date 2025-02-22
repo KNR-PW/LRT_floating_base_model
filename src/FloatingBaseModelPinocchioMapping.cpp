@@ -38,12 +38,12 @@ namespace floating_base_model
     const auto& info = floatingBaseModelInfo_;
     assert(info.stateDim == state.rows());
 
-    const pinocchio::Model& model = pinocchioInterfacePtr_->getModel();
+    const auto model = pinocchioInterfacePtr_->getModel();
 
-    const Eigen::Block<SCALAR_T, 3, 1> basePosition = access_helper_functions::getBasePosition(state, info);
-    const Eigen::Block<SCALAR_T, 3, 1> baseEulerAngles = access_helper_functions::getBaseOrientationZyx(state, info);
+    const auto basePosition = access_helper_functions::getBasePosition(state, info);
+    const Eigen::Matrix<SCALAR_T, 3, 1> baseEulerAngles = access_helper_functions::getBaseOrientationZyx(state, info);
     const Eigen::Quaternion<SCALAR_T>  baseQuaterion = quaterion_euler_transforms::getQuaternionFromEulerAnglesZyx(baseEulerAngles);
-    const Eigen::Block<SCALAR_T, Eigen::Dynamic, 1> actuatedJointPostition = access_helper_functions::getJointAngles(state, info);
+    const auto  actuatedJointPostition = access_helper_functions::getJointAngles(state, info);
     
     vector_t pinocchioJointPosition(model.nq);
     pinocchioJointPosition << basePosition, baseQuaterion.coeffs(), actuatedJointPostition;
@@ -62,9 +62,9 @@ namespace floating_base_model
     assert(info.stateDim == state.rows());
     assert(info.inputDim == input.rows());
 
-    const pinocchio::Model& model = pinocchioInterfacePtr_->getModel();
-    const Eigen::Block<SCALAR_T, 6, 1> baseVelocity = access_helper_functions::getBaseVelocity(state, info);
-    const Eigen::Block<SCALAR_T, Eigen::Dynamic, 1> actuatedJointVelocities = access_helper_functions::getJointVelocities(input, info);
+    const auto& model = pinocchioInterfacePtr_->getModel();
+    const auto baseVelocity = access_helper_functions::getBaseVelocity(state, info);
+    const auto actuatedJointVelocities = access_helper_functions::getJointVelocities(input, info);
     
     vector_t pinocchioJointVelocities(model.nq);
     pinocchioJointVelocities << baseVelocity, actuatedJointVelocities;
@@ -82,11 +82,11 @@ namespace floating_base_model
   {
     const auto& info = floatingBaseModelInfo_;
     assert(info.stateDim == state.rows());
-    const pinocchio::Model& model = pinocchioInterfacePtr_->getModel();
+    const auto& model = pinocchioInterfacePtr_->getModel();
     matrix_t t1(model.nq, model.nq);
     matrix_t t2(model.nq, model.nq);
 
-    return {t1, t2};
+    return {t1, t2}; // TODO
   }
   
   /******************************************************************************************************/
@@ -95,5 +95,10 @@ namespace floating_base_model
   template <typename SCALAR_T>
   FloatingBaseModelPinocchioMappingTpl<SCALAR_T>::FloatingBaseModelPinocchioMappingTpl(const FloatingBaseModelPinocchioMappingTpl& rhs)
   : pinocchioInterfacePtr_(nullptr), floatingBaseModelInfo_(rhs.floatingBaseModelInfo_) {}
+
+
+// explicit template instantiation
+template class FloatingBaseModelPinocchioMappingTpl<ocs2::scalar_t>;
+template class FloatingBaseModelPinocchioMappingTpl<ocs2::ad_scalar_t>;
 
 } // namespace floating_base_model
