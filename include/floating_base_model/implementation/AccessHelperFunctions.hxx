@@ -72,7 +72,7 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    Eigen::Block<const Derived, 6, 1> getContactWrenches(Eigen::MatrixBase<Derived>& input,
+    Eigen::Block<Derived, 6, 1> getContactWrenches(Eigen::MatrixBase<Derived>& input,
       size_t contactIndex,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
@@ -212,7 +212,7 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    const Eigen::Block<Derived, 3, 1> getBaseLinearVelocity(const Eigen::MatrixBase<Derived>& state,
+    const Eigen::Block<const Derived, 3, 1> getBaseLinearVelocity(const Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(state.rows() == info.stateDim);
@@ -236,7 +236,7 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    const Eigen::Block<Derived, 3, 1>  getBaseAngularVelocity(const Eigen::MatrixBase<Derived>& state,
+    const Eigen::Block<const Derived, 3, 1>  getBaseAngularVelocity(const Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(state.rows() == info.stateDim);

@@ -7,6 +7,34 @@ namespace floating_base_model
 {
   namespace model_helper_functions
   {
+
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    template <typename SCALAR_T>
+    Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertia(
+      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q)
+    {
+      const auto& model = interface.getModel();
+      auto& data = interface.getData();
+
+      pinocchio::forwardKinematics(model, data, q);
+      using Inertia = pinocchio::InertiaTpl<SCALAR_T, 0>;
+      using SE3 = pinocchio::SE3Tpl<SCALAR_T, 0>;
+
+      Inertia inertia;
+      std::vector<SE3> bMi(model.njoints);
+      bMi[1] = SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+      inertia = model.inertias[1];
+      for(int i = 2; i < model.njoints; ++i)
+      {
+        int parent = model.parents[i];
+        bMi[i] = bMi[parent] * data.liMi[i];
+        inertia += bMi[i].act(model.inertias[i]);
+      }
+      return inertia.matrix();
+    };
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
