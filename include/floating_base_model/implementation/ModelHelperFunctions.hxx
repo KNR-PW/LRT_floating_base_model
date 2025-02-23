@@ -12,6 +12,37 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename SCALAR_T>
+    pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>> 
+    computeFloatingBaseGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
+      const FloatingBaseModelInfoTpl<SCALAR_T>& info,
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input)
+    {
+      using Force = pinocchio::ForceTpl<SCALAR_T, 0>;
+      pinocchio::container::aligned_vector<Force> fext;
+      
+    };
+
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    template <typename SCALAR_T>
+    Eigen::Matrix<SCALAR_T, 6, 1> computeFloatingBaseGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>>& fext)
+    {
+      const auto& model = interface.getModel();
+      auto& data = interface.getData();
+      Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1> a = Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>::Zero(model.nv);
+      return pinocchio::rnea(model, data, q, v, a, fext).template block<6, 1>(0, 0);
+    };
+
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    template <typename SCALAR_T>
     Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertia(
       ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
       const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q)
