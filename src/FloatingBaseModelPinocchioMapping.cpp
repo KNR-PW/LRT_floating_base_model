@@ -66,7 +66,7 @@ namespace floating_base_model
     const auto baseVelocity = access_helper_functions::getBaseVelocity(state, info);
     const auto actuatedJointVelocities = access_helper_functions::getJointVelocities(input, info);
     
-    vector_t pinocchioJointVelocities(model.nq);
+    vector_t pinocchioJointVelocities(model.nv);
     pinocchioJointVelocities << baseVelocity, actuatedJointVelocities;
 
     return pinocchioJointVelocities;

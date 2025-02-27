@@ -24,7 +24,7 @@
 #include <floating_base_model/FactoryFunctions.hpp>
 #include <floating_base_model/QuaterionEulerTransforms.hpp>
 #include <floating_base_model/AccessHelperFunctions.hpp>
-//#include <floating_base_model/FloatingBaseModelDynamics.hpp>
+#include <floating_base_model/PinocchioFloatingBaseDynamics.hpp>
 
 
 #include <chrono>
@@ -63,7 +63,63 @@ int main()
   q[6] = quaterion.w();
   Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> dq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
   Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> tau = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
-  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> ddq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> ddq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Zero(model.nv);
+
+
+  
+  ocs2::vector_t input(24);
+  ocs2::vector_t state(24);
+  
+  input = ocs2::vector_t::Random(24);
+  state = ocs2::vector_t::Random(24);
+  
+  Eigen::Vector<ocs2::scalar_t, 3> eulerAngles = Eigen::Vector<ocs2::scalar_t, 3>::Random();
+  ocs2::makeEulerAnglesUnique(eulerAngles);
+  state.block<3,1>(9, 0) = eulerAngles;
+  
+  floating_base_model::PinocchioFloatingBaseDynamics dynamics(info);
+  dynamics.setPinocchioInterface(interface);
+  
+  auto input_old = input;
+  const auto value = dynamics.getValue(0, state, input);
+  const auto value_1 = dynamics.getValue2(0, state, input);
+  std::cout << "TEST: " << std::endl;
+  std::cout << value - value_1 << std::endl;
+
+  std::cout << pinocchio::rnea(model, data, q, dq, ddq) - pinocchio::nonLinearEffects(model, data, q, dq) << std::endl;
+  pinocchio::container::aligned_vector<pinocchio::Force> fext;
+  floating_base_model::model_helper_functions::computeForceVector(interface, info, input, fext);
+  floating_base_model::FloatingBaseModelPinocchioMapping mapping(info);
+  mapping.setPinocchioInterface(interface);
+  q = mapping.getPinocchioJointPosition(state);
+  dq = mapping.getPinocchioJointVelocity(state, input);
+  
+  pinocchio::forwardKinematics(model, data, q);
+  pinocchio::updateFramePlacements(model, data);
+  pinocchio::computeJointJacobians(model, data);
+  Eigen::Vector<ocs2::scalar_t, 6> tau_1 = Eigen::Vector<ocs2::scalar_t, 6>::Zero();
+  //tau_1 = pinocchio::nonLinearEffects(model, data, q, dq).block<6,1>(0,0);
+  for (size_t i = 0; i < info.numThreeDofContacts; i++) {
+    const auto forceWorldFrame = floating_base_model::access_helper_functions::getContactForces(input, i, info);
+    size_t contactFrameIndex = info.endEffectorFrameIndices[i];
+    pinocchio::Data::Matrix6x J(6, model.nv);
+    J.setZero();
+    pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
+    
+    std::cout << "Jacobian: " << contactFrameIndex << ": " << "\n" << J.transpose().block<6,3>(0,0) << std::endl;
+    tau_1 += -J.transpose().block<6,3>(0,0) * forceWorldFrame;
+  }  
+  std::cout << "4" << std::endl;
+  // for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) {
+  //   const Eigen::Block<Eigen::VectorXd, 6, 1> wrenchWorldFrame = floating_base_model::access_helper_functions::getContactWrenches(input, i, info);
+  //   size_t contactFrameIndex = info.endEffectorFrameIndices[i];
+  //   const auto jacobian_T = pinocchio::getFrameJacobian(model, data, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED).transpose();
+  //   tau_1 += -jacobian_T.block<6,6>(0,0) * wrenchWorldFrame;
+  // }  
+
+  std::cout << "TEST TAU:" << std::endl;
+  std::cout << tau_1 << std::endl;
+  std::cout << pinocchio::computeStaticTorque(model, data, q, fext).block<6,1>(0,0) - pinocchio::computeGeneralizedGravity(model, data, q).block<6,1>(0,0)   << std::endl;
 
   pinocchio::forwardKinematics(model, data, q);
   pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
@@ -145,20 +201,30 @@ int main()
   // pinocchio::Force force_4;
   // // force_1.linear(Eigen::Vector<ocs2::scalar_t, 3>(1.0, 1.0, 1.0));
 
-  // // std::string feetLinkName = "LFF_link";
-  // // size_t feetId = model.getFrameId(feetLinkName);
-  // // size_t feetJointId = model.frames[feetId].parentJoint;
+  pinocchio::Force force;
+  force.linear()  = Eigen::Vector3d::Random();
+  force.angular() = Eigen::Vector3d::Random();
+  std::string feetLinkName = "LFF_link";
+  size_t feetId = model.getFrameId(feetLinkName);
+  size_t feetJointId = model.frames[feetId].parentJoint;
 
-  // // pinocchio::forwardKinematics(model, data, q);
-  // // pinocchio::updateFramePlacements(model, data);
+  pinocchio::Force new_force;
+  new_force.linear() = data.oMi[feetJointId].rotation().transpose() * force.linear();
+  new_force.angular() = data.oMi[feetJointId].rotation().transpose() * force.angular();
+  new_force.angular() += model.frames[feetId].placement.translation().cross(new_force.linear());
+
+  pinocchio::forwardKinematics(model, data, q);
+  pinocchio::updateFramePlacements(model, data);
+
   // // std::cout << data.oMf[feetId] << std::endl;
   // // std::cout << data.oMi[feetJointId] << std::endl;
 
-  // // pinocchio::SE3 iMf = data.oMi[feetJointId].actInv(data.oMf[feetId]);
+  pinocchio::SE3 iMf = data.oMi[feetJointId].actInv(data.oMf[feetId]);
   // // std::cout << iMf << std::endl;
 
-  // // std::cout << force_1 << std::endl;
-  // // std::cout << iMf.act(force_1) << std::endl;
+  std::cout << "FORCE TEST:" << std::endl;
+  std::cout << iMf.act(force) << std::endl;
+  std::cout << new_force << std::endl;
 
   // // pinocchio::Force force_world = force_1;
   // // force_world.angular(force_1.angular() + data.oMf[feetId].translation().cross(force_1.linear()));
@@ -366,22 +432,21 @@ int main()
 
 
 
-  pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
-  Eigen::Matrix<double, 6, 6> Mb_p = data.M.block<6,6>(0, 0);
+  // pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
+  // Eigen::Matrix<double, 6, 6> Mb_p = data.M.block<6,6>(0, 0);
 
-  auto Mb_inv = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertiaInverse(Mb_p);
+  // auto Mb_inv = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertiaInverse(Mb_p);
 
-  Eigen::Vector<double, 6> tau_base = tau.block<6, 1>(0, 0);
+  // Eigen::Vector<double, 6> tau_base = tau.block<6, 1>(0, 0);
 
-  auto my_acceleration = floating_base_model::model_helper_functions::computeBaseBodyAcceleration(Mb_p, tau_base);
+  // auto my_acceleration = floating_base_model::model_helper_functions::computeBaseBodyAcceleration(Mb_p, tau_base);
 
-  std::cout << Mb_p.inverse() * tau_base - my_acceleration << std::endl;
-  std::cout << Mb_p.inverse() * tau_base - Mb_inv * tau_base << std::endl;
+  // std::cout << Mb_p.inverse() * tau_base - my_acceleration << std::endl;
+  // std::cout << Mb_p.inverse() * tau_base - Mb_inv * tau_base << std::endl;
 
-  //auto Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
+  // //auto Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
 
-  std::cout << Mb_p - Mb_moje << std::endl;
-
+  // std::cout << Mb_p - Mb_moje << std::endl;
 
   return 0;
 }

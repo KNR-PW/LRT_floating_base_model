@@ -5,11 +5,13 @@
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
 
 #include <floating_base_model/FloatingBaseModelInfo.hpp>
+#include <floating_base_model/AccessHelperFunctions.hpp>
 
 #include <pinocchio/spatial/inertia.hpp>
 #include <pinocchio/multibody/model.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
+#include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
 
 namespace floating_base_model 
@@ -26,13 +28,15 @@ namespace floating_base_model
      * 
      * @remark: This function require:
      * pinocchio::forwardKinematics(model, data, q)
+     * pinocchio::updateFramePlacements(model, data)
+     * 
      */
     template <typename SCALAR_T>
-    pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>> 
-    computeFloatingBaseGeneralizedTorques(
-      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
+    void computeForceVector(
+      const ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info,
-      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input);
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input,
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>> fext);
 
     /**
      * Compute generalized torques due to:
@@ -65,8 +69,9 @@ namespace floating_base_model
      * @param [in] q: pinocchio joint configuration
      * @return Mb(q): 6x6 left-block of M(q)
      * 
-     * @remark: This function also internally calls:
+    * @remark: This function require:
      * pinocchio::forwardKinematics(model, data, q)
+     * pinocchio::updateFramePlacements(model, data)
      */
     template <typename SCALAR_T>
     Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertia(

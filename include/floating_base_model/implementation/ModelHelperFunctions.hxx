@@ -12,15 +12,43 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename SCALAR_T>
-    pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>> 
-    computeFloatingBaseGeneralizedTorques(
-      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
+    void computeForceVector(
+      const ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info,
-      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input)
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input,
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>> fext)
     {
+      const auto& model = interface.getModel();
+      auto& data = interface.getData();
+
       using Force = pinocchio::ForceTpl<SCALAR_T, 0>;
-      pinocchio::container::aligned_vector<Force> fext;
-      
+      Force force;
+      force.linear() = Eigen::Vector<SCALAR_T, 3>::Zero();
+      force.angular() = Eigen::Vector<SCALAR_T, 3>::Zero();
+
+      for (size_t i = 0; i < info.numThreeDofContacts; i++) {
+        const auto forceWorldFrame = access_helper_functions::getContactForces(input, i, info);
+        size_t parentJointIndex = info.endEffectorJointIndices[i];
+        size_t contactFrameIndex = info.endEffectorFrameIndices[i];
+        const auto& contactFrame = model.frames[contactFrameIndex];
+        const auto& jointFramePlacement = contactFrame.placement.translation();
+        force.linear() = data.oMi[parentJointIndex].rotation().transpose() * forceWorldFrame;
+        force.angular() = jointFramePlacement.cross(force.linear());
+        fext[parentJointIndex] = force;
+      }  
+    
+      for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) {
+        const auto wrenchWorldFrame = access_helper_functions::getContactWrenches(input, i, info);
+        size_t parentJointIndex = info.endEffectorJointIndices[i];
+        size_t contactFrameIndex = info.endEffectorFrameIndices[i];
+        const auto& contactFrame = model.frames[contactFrameIndex];
+        const auto& jointFramePlacement = contactFrame.placement.translation();
+        Eigen::Matrix3<SCALAR_T> worldToJointRotation = data.oMi[parentJointIndex].rotation().transpose();
+        force.linear() = worldToJointRotation * wrenchWorldFrame.template block<3,1>(0, 0);
+        force.angular() = worldToJointRotation * wrenchWorldFrame.template block<3,1>(3, 0) + jointFramePlacement.cross(force.linear());
+        fext[parentJointIndex] = force;
+      }  
+
     };
 
     /******************************************************************************************************/
@@ -49,8 +77,7 @@ namespace floating_base_model
     {
       const auto& model = interface.getModel();
       auto& data = interface.getData();
-
-      pinocchio::forwardKinematics(model, data, q);
+      
       using Inertia = pinocchio::InertiaTpl<SCALAR_T, 0>;
       using SE3 = pinocchio::SE3Tpl<SCALAR_T, 0>;
 
@@ -58,9 +85,9 @@ namespace floating_base_model
       std::vector<SE3> bMi(model.njoints);
       bMi[1] = SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
       inertia = model.inertias[1];
-      for(int i = 2; i < model.njoints; ++i)
+      for(pinocchio::JointIndex i = 2; i < (pinocchio::JointIndex) model.njoints; ++i)
       {
-        int parent = model.parents[i];
+        pinocchio::JointIndex parent = model.parents[i];
         bMi[i] = bMi[parent] * data.liMi[i];
         inertia += bMi[i].act(model.inertias[i]);
       }

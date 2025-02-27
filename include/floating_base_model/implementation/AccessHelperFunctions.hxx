@@ -33,7 +33,7 @@ namespace floating_base_model
       const size_t contactForceIndex = 3 * contactIndex;
       const size_t contactWrenchIndex = 3 * info.numThreeDofContacts + 6 * (contactIndex - info.numThreeDofContacts);
       const size_t startRow = (contactIndex < info.numThreeDofContacts) ? contactForceIndex : contactWrenchIndex;
-      return Eigen::Block<Derived, 3, 1>(input.derived(), startRow, 0);
+      return Eigen::Block<const Derived, 3, 1>(input.derived(), startRow, 0);
     };
                                                              
     /******************************************************************************************************/
