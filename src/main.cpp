@@ -85,11 +85,16 @@ int main()
   const auto value_1 = dynamics.getValue2(0, state, input);
   std::cout << "TEST: " << std::endl;
   std::cout << value - value_1 << std::endl;
+  std::cout << "AAAA" << std::endl;
 
   std::cout << pinocchio::rnea(model, data, q, dq, ddq) - pinocchio::nonLinearEffects(model, data, q, dq) << std::endl;
-  pinocchio::container::aligned_vector<pinocchio::Force> fext;
+  pinocchio::Force zero_force(Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
+  pinocchio::container::aligned_vector<pinocchio::Force> fext(model.njoints, zero_force);
+  std::cout << "AAAA" << std::endl;
   floating_base_model::model_helper_functions::computeForceVector(interface, info, input, fext);
+  std::cout << "AAAA" << std::endl;
   floating_base_model::FloatingBaseModelPinocchioMapping mapping(info);
+  std::cout << "AAAA" << std::endl;
   mapping.setPinocchioInterface(interface);
   q = mapping.getPinocchioJointPosition(state);
   dq = mapping.getPinocchioJointVelocity(state, input);
@@ -97,6 +102,7 @@ int main()
   pinocchio::forwardKinematics(model, data, q);
   pinocchio::updateFramePlacements(model, data);
   pinocchio::computeJointJacobians(model, data);
+  std::cout << "AAAA" << std::endl;
   Eigen::Vector<ocs2::scalar_t, 6> tau_1 = Eigen::Vector<ocs2::scalar_t, 6>::Zero();
   //tau_1 = pinocchio::nonLinearEffects(model, data, q, dq).block<6,1>(0,0);
   for (size_t i = 0; i < info.numThreeDofContacts; i++) {
@@ -116,11 +122,11 @@ int main()
   //   const auto jacobian_T = pinocchio::getFrameJacobian(model, data, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED).transpose();
   //   tau_1 += -jacobian_T.block<6,6>(0,0) * wrenchWorldFrame;
   // }  
-
+  std::cout << "AAAA" << std::endl;
   std::cout << "TEST TAU:" << std::endl;
   std::cout << tau_1 << std::endl;
   std::cout << pinocchio::computeStaticTorque(model, data, q, fext).block<6,1>(0,0) - pinocchio::computeGeneralizedGravity(model, data, q).block<6,1>(0,0)   << std::endl;
-
+  std::cout << "AAAA" << std::endl;
   pinocchio::forwardKinematics(model, data, q);
   pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
 

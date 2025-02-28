@@ -73,8 +73,6 @@ class PinocchioFloatingBaseDynamics final
     ocs2::vector_t getValue(ocs2::scalar_t time,
        const ocs2::vector_t& state, const ocs2::vector_t& input);
       
-    ocs2::vector_t getValue2(ocs2::scalar_t time,
-        const ocs2::vector_t& state, const ocs2::vector_t& input);
     /**
      * Computes first order approximation of the system flow map x_dot = f(x, u)
      *

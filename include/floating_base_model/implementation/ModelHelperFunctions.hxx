@@ -16,7 +16,7 @@ namespace floating_base_model
       const ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info,
       const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input,
-      pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>> fext)
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>>& fext)
     {
       const auto& model = interface.getModel();
       auto& data = interface.getData();
