@@ -83,9 +83,9 @@ namespace floating_base_model
 
       Inertia inertia;
       std::vector<SE3> bMi(model.njoints);
-      bMi[1] = SE3(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+      bMi[1] = SE3(Eigen::Matrix<SCALAR_T, 3, 3>::Identity(), Eigen::Vector<SCALAR_T, 3>::Zero());
       inertia = model.inertias[1];
-      for(pinocchio::JointIndex i = 2; i < (pinocchio::JointIndex) model.njoints; ++i)
+      for(pinocchio::JointIndex i = 2; i < (pinocchio::JointIndex)model.njoints; ++i)
       {
         pinocchio::JointIndex parent = model.parents[i];
         bMi[i] = bMi[parent] * data.liMi[i];

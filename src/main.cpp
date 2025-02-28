@@ -25,7 +25,7 @@
 #include <floating_base_model/QuaterionEulerTransforms.hpp>
 #include <floating_base_model/AccessHelperFunctions.hpp>
 #include <floating_base_model/PinocchioFloatingBaseDynamics.hpp>
-
+#include <floating_base_model/PinocchioFloatingBaseDynamicsAD.hpp>
 
 #include <chrono>
 
@@ -79,12 +79,44 @@ int main()
   
   floating_base_model::PinocchioFloatingBaseDynamics dynamics(info);
   dynamics.setPinocchioInterface(interface);
+
+  std::string modelName = "floating_base_model";
+  std::string modelFolder = "tmp/ocs2";
+  floating_base_model::PinocchioFloatingBaseDynamicsAD dynamics_ad(interface, info, modelName, modelFolder, true, true);
+
+  auto start = std::chrono::high_resolution_clock::now();
+  for(int i = 0; i < 10000; ++i)
+  {
+    state.setRandom();
+    input.setRandom();
+    const auto value = dynamics.getValue(0, state, input);
+  }
+  auto stop = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  std::cout << "Porównanie: " << std::endl;
+  std::cout << "Klasyczny: " << duration.count() << std::endl;
   
-  auto input_old = input;
-  const auto value = dynamics.getValue(0, state, input);
-  const auto value_1 = dynamics.getValue2(0, state, input);
+  start = std::chrono::high_resolution_clock::now();
+  for(int i = 0; i < 10000; ++i)
+  {
+    state.setRandom();
+    input.setRandom();
+    const auto value_ad = dynamics_ad.getValue(0, state, input);
+  }
+  stop = std::chrono::high_resolution_clock::now();
+  duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  std::cout << "AutoDiff: " << duration.count() << std::endl;
+
+
+  //std::cout << value - value_ad << std::endl;
+
+  const auto linearAproximation = dynamics_ad.getLinearApproximation(0, state, input);
+  std::cout << "Liniowa aproksymacja" << std::endl;
+  std::cout << linearAproximation.dfdx << std::endl;
+
+  //const auto value_1 = dynamics.getValue2(0, state, input);
   std::cout << "TEST: " << std::endl;
-  std::cout << value - value_1 << std::endl;
+  //std::cout << value - value_1 << std::endl;
   std::cout << "AAAA" << std::endl;
 
   std::cout << pinocchio::rnea(model, data, q, dq, ddq) - pinocchio::nonLinearEffects(model, data, q, dq) << std::endl;
@@ -141,13 +173,13 @@ int main()
   q[6] = quaterion2.w();
 
   pinocchio::forwardKinematics(model, data, q);
-  auto start = std::chrono::high_resolution_clock::now();
+  start = std::chrono::high_resolution_clock::now();
   for(int i = 0; i < 1000; ++i)
   {
     pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
   }
-  auto stop = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  stop = std::chrono::high_resolution_clock::now();
+  duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
   std::cout << "Algo1: " << duration.count() << std::endl;
   // Eigen::Matrix<double, 6, 6> Mb_2 = data.M.block<6,6>(0, 0);
 

@@ -63,14 +63,15 @@ namespace floating_base_model
     const auto v = mapping_.getPinocchioJointVelocity(state, input);
     pinocchio::forwardKinematics(model, data, q);
 
-    const auto Mb   = model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
+    const auto Mb = model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
     model_helper_functions::computeForceVector(interface, info, input, fext_);
     const auto tau  = model_helper_functions::computeFloatingBaseGeneralizedTorques(interface, q, v, fext_);
     
     auto bodyVelocityDerivative = model_helper_functions::computeBaseBodyAcceleration(Mb, tau);
 
     bodyVelocityDerivative.block<3,1>(0,0) += baseAngularVelocity.cross(baseLinearVelocity);
-    ocs2::vector_t dynamics(6 + model.nv);
+    
+    ocs2::vector_t dynamics(info.stateDim);
     dynamics << bodyVelocityDerivative, basePositionDerivative, eulerAnglesDerivative, actuatedJointPositionDerivative;
     
     return dynamics;
