@@ -1,3 +1,4 @@
 .vscode
 CMakeListsaaaaa.txt
 build/
+tmp/
