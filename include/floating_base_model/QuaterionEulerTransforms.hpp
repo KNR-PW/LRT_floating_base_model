@@ -98,57 +98,6 @@ namespace quaterion_euler_transforms
   template<typename SCALAR_T>
   std::array<Eigen::Matrix<SCALAR_T, 3, 3>, 4> getMappingFromLocalAngularVelocitytoEulerAnglesDerivativeQuaterionGradient(const Eigen::Quaternion<SCALAR_T>& quaterion);
 
-
-
-  /*
-      TESTING FUNCTIONS
-  */
-  // JEST GIT !!!!
-  template <typename SCALAR_T> 
-  Eigen::Matrix<SCALAR_T, 1, 4> test_func_derivative(const Eigen::Quaternion<SCALAR_T>& quaterion)
-  {
-    Eigen::Matrix<SCALAR_T, 1, 4> return_val;
-    return_val << 1, 1, 0, 0;
-    return return_val;
-  };
-  // JEST GIT !!!!
-  template <typename SCALAR_T> 
-  Eigen::Matrix<SCALAR_T, 1, 3> test_func_derivative(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx)
-  {
-    const SCALAR_T half = 0.5;
-    const SCALAR_T z = eulerAnglesZyx[0] * half;
-    const SCALAR_T y = eulerAnglesZyx[1] * half;
-    const SCALAR_T x = eulerAnglesZyx[2] * half;
-
-    const SCALAR_T cz = cos(z);
-    const SCALAR_T cy = cos(y);
-    const SCALAR_T cx = cos(x);
-    const SCALAR_T sz = sin(z);
-    const SCALAR_T sy = sin(y);
-    const SCALAR_T sx = sin(x);
-
-    const SCALAR_T sxcysz = sx * cy * sz;
-    const SCALAR_T cxsycz = cx * sy * cz;
-    const SCALAR_T cxsysz = cx * sy * sz;
-    const SCALAR_T sxcycz = sx * cy * cz;
-    const SCALAR_T cxcycz = cx * cy * cz;
-    const SCALAR_T sxsysz = sx * sy * sz;
-    const SCALAR_T cxcysz = cx * cy * sz;
-    const SCALAR_T sxsycz = sx * sy * cz;
-
-    Eigen::Matrix<SCALAR_T, 1, 3> funtionDerivativeMatrix;
-
-    funtionDerivativeMatrix << -half * (sxcysz + cxsycz) - half * (cxsysz - sxcycz),
-                               -half * (sxsycz + cxcysz) + half * (cxcycz - sxsysz),
-                                half * (cxcycz + sxsysz) - half * (sxsycz - cxcysz);
-    
-    return funtionDerivativeMatrix;
-
-  };
-
 };
-
-
-
 
 #endif

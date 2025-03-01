@@ -7,7 +7,10 @@ endif()
 
 
 set(CMAKE_CXX_STANDARD 17)
-# find dependencies
+
+##################
+## Dependencies ##
+##################
 find_package(ament_cmake REQUIRED)
 
 set(THIS_PACKAGE_DEPENDS
@@ -15,6 +18,9 @@ set(THIS_PACKAGE_DEPENDS
   ocs2_centroidal_model
 )
 
+###########
+## Build ##
+###########
 
 set(FLAGS
         ${OCS2_CXX_FLAGS}
@@ -31,19 +37,22 @@ endforeach()
 
 include_directories(include)
 
-add_executable(${PROJECT_NAME}
+add_library(${PROJECT_NAME}
   src/FloatingBaseModelInfo.cpp
   src/FactoryFunctions.cpp
   src/QuaterionEulerTransforms.cpp
   src/FloatingBaseModelPinocchioMapping.cpp
   src/PinocchioFloatingBaseDynamics.cpp
   src/PinocchioFloatingBaseDynamicsAD.cpp
-  src/main.cpp
+  # src/main.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
-
 target_compile_options(${PROJECT_NAME} PUBLIC ${FLAGS})
 
+
+#########################
+###   CLANG TOOLING   ###
+#########################
 find_package(cmake_clang_tools QUIET)
 if (cmake_clang_tools_FOUND)
     message(STATUS "Run clang tooling for target " ${PROJECT_NAME})
@@ -54,24 +63,14 @@ if (cmake_clang_tools_FOUND)
             CF_WERROR
     )
 endif (cmake_clang_tools_FOUND)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+#############
+## Install ##
+#############
 
 install(TARGETS
   ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
@@ -81,80 +80,26 @@ install(
   DIRECTORY include/
   DESTINATION include/${PROJECT_NAME}
 )
+ament_export_dependencies(${dependencies})
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
-ament_package()
+#############
+## Testing ##
+#############
+# find_package(ament_lint_auto REQUIRED)
+# ament_lint_auto_find_test_dependencies()
 
+if (BUILD_TESTING)
+    find_package(ament_cmake_gtest REQUIRED)
 
+    ament_add_gtest(${PROJECT_NAME}_test
+            test/QuaterionEulerTransformsTest.cpp
+    )
+    ament_target_dependencies(${PROJECT_NAME}_test ${THIS_PACKAGE_DEPENDS})
+    target_include_directories(${PROJECT_NAME}_test PRIVATE test/include)
+    target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+    target_compile_options(${PROJECT_NAME}_test PUBLIC ${FLAGS})
 
+endif ()
 
-# cmake_minimum_required(VERSION 3.16)
-# project(floating_base_model LANGUAGES CXX)
-
-# if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#   add_compile_options(-Wall -Wextra -Wpedantic)
-# endif()
-
-# set(CMAKE_CXX_STANDARD 17)
-# find_package(ament_cmake REQUIRED)
-
-# set(THIS_PACKAGE_DEPENDS
-#   pinocchio
-#   ocs2_pinocchio_interface 
-#   eigen3_cmake_module
-#   Eigen3
-# )
-
-# # find dependencies
-# foreach(Dependency IN ITEMS ${THIS_PACKAGE_DEPENDS})
-#   find_package(${Dependency} REQUIRED)
-# endforeach()
-
-# include_directories(include)
-
-# add_executable(${PROJECT_NAME} 
-#   src/CentroidalModel.cpp
-#   src/MultiEndEffectorKinematics.cpp
-# )
-
-# # find_package(cmake_clang_tools QUIET)
-# # if (cmake_clang_tools_FOUND)
-# #     message(STATUS "Run clang tooling for target " ${PROJECT_NAME})
-# #     add_clang_tooling(
-# #             TARGETS ${PROJECT_NAME}
-# #             SOURCE_DIRS src include test
-# #             CT_HEADER_DIRS include
-# #             CF_WERROR
-# #     )
-# # endif (cmake_clang_tools_FOUND)
-
-# ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
-
-# # uncomment the following section in order to fill in
-# # further dependencies manually.
-# # find_package(<dependency> REQUIRED)
-
-# if(BUILD_TESTING)
-#   find_package(ament_lint_auto REQUIRED)
-#   # the following line skips the linter which checks for copyrights
-#   # comment the line when a copyright and license is added to all source files
-#   set(ament_cmake_copyright_FOUND TRUE)
-#   # the following line skips cpplint (only works in a git repo)
-#   # comment the line when this package is in a git repo and when
-#   # a copyright and license is added to all source files
-#   set(ament_cmake_cpplint_FOUND TRUE)
-#   ament_lint_auto_find_test_dependencies()
-# endif()
-
-# install(TARGETS
-#   ${PROJECT_NAME}
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION lib/${PROJECT_NAME}
-# )
-
-# install(
-#   DIRECTORY include/
-#   DESTINATION include/${PROJECT_NAME}
-# )
-
-# ament_package()
+ament_package(CONFIG_EXTRAS "cmake/pinocchio_config.cmake")
