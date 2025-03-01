@@ -49,7 +49,6 @@ int main()
     std::cout << "Contact Frame: " << threeDofContactNames[i] << ", " << info.endEffectorFrameIndices[i] << std::endl;
     std::cout << "Contact Joint: " << interface.getModel().names[info.endEffectorJointIndices[i]] << ", " << info.endEffectorJointIndices[i] << std::endl;
   }
-
   //floating_base_model::FloatingBaseModelInfoCppAd info_ad = info.toCppAd();
 
   const auto& model = interface.getModel();

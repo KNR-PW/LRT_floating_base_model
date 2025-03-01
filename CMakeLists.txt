@@ -49,6 +49,12 @@ add_library(${PROJECT_NAME}
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
 target_compile_options(${PROJECT_NAME} PUBLIC ${FLAGS})
 
+# Resolve for the package path at compile time.
+configure_file (
+  "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/path_management/package_path.h.in"
+  "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/path_management/package_path.h" @ONLY
+)
+
 
 #########################
 ###   CLANG TOOLING   ###
@@ -83,6 +89,7 @@ install(
 ament_export_dependencies(${dependencies})
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
+
 #############
 ## Testing ##
 #############
@@ -94,6 +101,7 @@ if (BUILD_TESTING)
 
     ament_add_gtest(${PROJECT_NAME}_test
             test/QuaterionEulerTransformsTest.cpp
+            test/FactoryFunctionsTest.cpp
     )
     ament_target_dependencies(${PROJECT_NAME}_test ${THIS_PACKAGE_DEPENDS})
     target_include_directories(${PROJECT_NAME}_test PRIVATE test/include)

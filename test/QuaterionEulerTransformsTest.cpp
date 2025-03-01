@@ -161,9 +161,3 @@ TEST(QuaterionEulerTransformsTest, LocalAngularVelocityMappingGradients)
   ASSERT_NEAR(norm_x, 0.0, 1e-6);
 };
 
-
-int main(int argc, char** argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-};
