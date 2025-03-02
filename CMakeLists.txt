@@ -103,6 +103,7 @@ if (BUILD_TESTING)
             test/QuaterionEulerTransformsTest.cpp
             test/FactoryFunctionsTest.cpp
             test/AccessHelperFunctionsTest.cpp
+            test/ModelHelperFunctionsTest.cpp
     )
     ament_target_dependencies(${PROJECT_NAME}_test ${THIS_PACKAGE_DEPENDS})
     target_include_directories(${PROJECT_NAME}_test PRIVATE test/include)

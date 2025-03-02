@@ -72,8 +72,7 @@ namespace floating_base_model
     /******************************************************************************************************/
     template <typename SCALAR_T>
     Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertia(
-      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
-      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q)
+      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface)
     {
       const auto& model = interface.getModel();
       auto& data = interface.getData();

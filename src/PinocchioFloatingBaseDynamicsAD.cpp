@@ -73,7 +73,7 @@ namespace floating_base_model
 
     pinocchio::forwardKinematics(model, data, q);
 
-    const auto Mb = model_helper_functions::computeFloatingBaseLockedInertia(pinocchioInterfaceCppAd, q);
+    const auto Mb = model_helper_functions::computeFloatingBaseLockedInertia(pinocchioInterfaceCppAd);
 
     using Force = pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>;
     Force force;
