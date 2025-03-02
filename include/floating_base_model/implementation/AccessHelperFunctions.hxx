@@ -265,7 +265,7 @@ namespace floating_base_model
     {
       assert(state.rows() == info.stateDim);
       assert(state.cols() == 1);
-      return Eigen::Block<Derived, -1, 1>(state.derived(), 6, 0, info.generalizedCoordinatesNum, 1);
+      return Eigen::Block<const Derived, -1, 1>(state.derived(), 6, 0, info.generalizedCoordinatesNum, 1);
     };
     
     /******************************************************************************************************/
