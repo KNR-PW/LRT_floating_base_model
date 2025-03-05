@@ -51,7 +51,7 @@ namespace floating_base_model
     ocs2::PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
     const FloatingBaseModelPinocchioMappingCppAd& mappingCppAd,
     const ocs2::ad_vector_t& state,
-    const ocs2:: ad_vector_t& input) 
+    const ocs2::ad_vector_t& input) 
   {
     const auto& info = mappingCppAd.getFloatingBaseModelInfo();
     assert(info.stateDim == state.rows());

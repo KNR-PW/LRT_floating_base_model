@@ -3,9 +3,12 @@
 
 #include <ocs2_pinocchio_interface/PinocchioStateInputMapping.h>
 
-#include "floating_base_model/FloatingBaseModelInfo.hpp"
-#include "floating_base_model/AccessHelperFunctions.hpp"
-#include "floating_base_model/QuaterionEulerTransforms.hpp"
+#include <ocs2_robotic_tools/common/RotationDerivativesTransforms.h>
+#include <ocs2_robotic_tools/common/RotationTransforms.h>
+
+#include <floating_base_model/FloatingBaseModelInfo.hpp>
+#include <floating_base_model/AccessHelperFunctions.hpp>
+#include <floating_base_model/QuaterionEulerTransforms.hpp>
 namespace floating_base_model 
 {
 

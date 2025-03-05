@@ -83,10 +83,31 @@ namespace floating_base_model
     const auto& info = floatingBaseModelInfo_;
     assert(info.stateDim == state.rows());
     const auto& model = pinocchioInterfacePtr_->getModel();
-    matrix_t t1(model.nq, model.nq);
-    matrix_t t2(model.nq, model.nq);
 
-    return {t1, t2}; // TODO
+    const Eigen::Vector<SCALAR_T, 3> eulerAngles = access_helper_functions::getBaseOrientationZyx(state, info);
+    const auto baseRotationMatrix = ocs2::getRotationMatrixFromZyxEulerAngles(eulerAngles);
+    const auto E_inv = ocs2::getMappingFromEulerAnglesZyxDerivativeToLocalAngularVelocity(eulerAngles);
+    
+    matrix_t dqdx = matrix_t::Zero(model.nv, info.stateDim);
+    dqdx.template block<3, 3>(0, 6) = baseRotationMatrix;
+    dqdx.template block<3, 3>(3, 9) = E_inv;
+    dqdx.block(6, info.actuatedDofNum, info.actuatedDofNum, info.actuatedDofNum).setIdentity();
+
+    matrix_t dvdx = matrix_t::Zero(model.nv, info.stateDim);
+    dvdx.template block<6, 6>(0, 0).setIdentity();
+
+    matrix_t dvdu = matrix_t::Zero(model.nv, info.inputDim);
+    size_t actuatedDofStartCol = info.inputDim - info.actuatedDofNum;
+    dqdx.block(6, actuatedDofStartCol, info.actuatedDofNum, info.actuatedDofNum).setIdentity();
+
+    matrix_t dfdx = matrix_t::Zero(Jv.cols(), info.stateDim);
+    dfdx.block(0, 0, Jv.cols(), 6) = Jv.leftCols(6);
+    dfdx.noalias() = Jq * dqdx;
+
+    matrix_t dfdu = matrix_t::Zero(Jv.cols(), info.stateDim);
+    dfdx.block(0, 0, Jv.cols(), info.actuatedDofNum) = Jv.rightCols(info.actuatedDofNum);
+
+    return {dfdx, dfdu};
   }
   
   /******************************************************************************************************/
