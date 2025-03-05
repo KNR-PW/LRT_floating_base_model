@@ -1,6 +1,4 @@
-
 #ifndef __FLOATING_BASE_MODEL_DYNAMICS_AD_HPP__
-
 #define __FLOATING_BASE_MODEL_DYNAMICS_AD_HPP__
 
 #include <memory>

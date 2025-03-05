@@ -1,4 +1,4 @@
 .vscode
-CMakeListsaaaaa.txt
 build/
 tmp/
+include/floating_base_model/path_management/package_path.h

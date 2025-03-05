@@ -317,5 +317,6 @@ namespace floating_base_model
       const size_t startRow = 3 * info.numThreeDofContacts + 6 * info.numSixDofContacts;
       return Eigen::Block<const Derived, -1, 1>(input.derived(), startRow, 0, info.actuatedDofNum, 1);
     };
+    
   }; // namespace access_helper_functions
 }; // namespace floating_base_model

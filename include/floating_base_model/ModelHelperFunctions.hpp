@@ -1,11 +1,17 @@
-#ifndef __FLOATING_BASE_HELPER_FUNCTIONS__
-#define __FLOATING_BASE_HELPER_FUNCTIONS__
+#ifndef __FLOATING_BASE_MODEL_HELPER_FUNCTIONS__
+#define __FLOATING_BASE_MODEL_HELPER_FUNCTIONS__
 
 
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
 
 #include <floating_base_model/FloatingBaseModelInfo.hpp>
 #include <floating_base_model/AccessHelperFunctions.hpp>
+
+#include <ocs2_core/Types.h>
+#include <ocs2_core/automatic_differentiation/Types.h>
+#include <ocs2_robotic_tools/common/RotationDerivativesTransforms.h>
+#include <ocs2_robotic_tools/common/RotationTransforms.h>
+#include <ocs2_robotic_tools/common/SkewSymmetricMatrix.h>
 
 #include <pinocchio/spatial/inertia.hpp>
 #include <pinocchio/multibody/model.hpp>
@@ -69,7 +75,7 @@ namespace floating_base_model
      * @param [in] q: pinocchio joint configuration
      * @return Mb(q): 6x6 left-block of M(q)
      * 
-    * @remark: This function require:
+     * @remark: This function require:
      * pinocchio::forwardKinematics(model, data, q)
      * pinocchio::updateFramePlacements(model, data)
      */
@@ -109,9 +115,54 @@ namespace floating_base_model
       const Eigen::Matrix<SCALAR_T, 6, 6>& Mb, 
       const Eigen::Matrix<SCALAR_T, 6, 1>& tau);
   
+
+
+    /* Explicit template instantiation for scalar_t and ad_scalar_t */
+    extern template void computeForceVector(
+      const ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface,
+      const FloatingBaseModelInfoTpl<ocs2::scalar_t>& info,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& input,
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::scalar_t, 0>>& fext);
+    
+    extern template void computeForceVector(
+      const ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
+      const FloatingBaseModelInfoTpl<ocs2::ad_scalar_t>& info,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& input,
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>>& fext);
+
+    extern template Eigen::Matrix<ocs2::scalar_t, 6, 1> computeFloatingBaseGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::scalar_t, 0>>& fext);
+
+    extern template Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> computeFloatingBaseGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>>& fext);
+    
+    extern template Eigen::Matrix<ocs2::scalar_t, 6, 6> computeFloatingBaseLockedInertia(
+      ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface);
+    
+    extern template Eigen::Matrix<ocs2::ad_scalar_t, 6, 6> computeFloatingBaseLockedInertia(
+      ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface);
+
+    extern template Eigen::Matrix<ocs2::scalar_t, 6, 6> computeFloatingBaseLockedInertiaInverse(
+      const Eigen::Matrix<ocs2::scalar_t, 6, 6>& Mb);
+
+    extern template Eigen::Matrix<ocs2::ad_scalar_t, 6, 6> computeFloatingBaseLockedInertiaInverse(
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 6>& Mb);
+
+    extern template Eigen::Matrix<ocs2::scalar_t, 6, 1> computeBaseBodyAcceleration(
+      const Eigen::Matrix<ocs2::scalar_t, 6, 6>& Mb,
+      const Eigen::Matrix<ocs2::scalar_t, 6, 1>& tau);
+
+    extern template Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> computeBaseBodyAcceleration(
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 6>& Mb,
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 1>& tau);
+
   }; // namespace model_helper_functions
 };  // namespace floating_base_model
-
-#include "implementation/ModelHelperFunctions.hxx"
 
 #endif

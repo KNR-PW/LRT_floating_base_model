@@ -41,6 +41,7 @@ add_library(${PROJECT_NAME}
   src/FloatingBaseModelInfo.cpp
   src/FactoryFunctions.cpp
   src/QuaterionEulerTransforms.cpp
+  src/ModelHelperFunctions.cpp
   src/FloatingBaseModelPinocchioMapping.cpp
   src/PinocchioFloatingBaseDynamics.cpp
   src/PinocchioFloatingBaseDynamicsAD.cpp
@@ -104,6 +105,7 @@ if (BUILD_TESTING)
             test/FactoryFunctionsTest.cpp
             test/AccessHelperFunctionsTest.cpp
             test/ModelHelperFunctionsTest.cpp
+            test/FloatingBaseModelPinocchioMappingTest.cpp
     )
     ament_target_dependencies(${PROJECT_NAME}_test ${THIS_PACKAGE_DEPENDS})
     target_include_directories(${PROJECT_NAME}_test PRIVATE test/include)

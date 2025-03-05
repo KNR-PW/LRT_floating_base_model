@@ -275,6 +275,6 @@ namespace floating_base_model
   }; // namespace acess_helper_functions
 }; // namespace floating_base_model
 
-#include "implementation/AccessHelperFunctions.hxx"
+#include "AccessHelperFunctions.hxx"
 
 #endif

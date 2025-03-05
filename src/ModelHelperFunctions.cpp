@@ -1,7 +1,4 @@
-
-#include <ocs2_robotic_tools/common/RotationDerivativesTransforms.h>
-#include <ocs2_robotic_tools/common/RotationTransforms.h>
-#include <ocs2_robotic_tools/common/SkewSymmetricMatrix.h>
+#include <floating_base_model/ModelHelperFunctions.hpp>
 
 namespace floating_base_model
 {
@@ -49,7 +46,7 @@ namespace floating_base_model
         fext[parentJointIndex] = force;
       }  
 
-    };
+    }
 
     /******************************************************************************************************/
     /******************************************************************************************************/
@@ -65,7 +62,7 @@ namespace floating_base_model
       auto& data = interface.getData();
       Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1> a = Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>::Zero(model.nv);
       return pinocchio::rnea(model, data, q, v, a, fext).template block<6, 1>(0, 0);
-    };
+    }
 
     /******************************************************************************************************/
     /******************************************************************************************************/
@@ -91,12 +88,14 @@ namespace floating_base_model
         inertia += bMi[i].act(model.inertias[i]);
       }
       return inertia.matrix();
-    };
+    }
+
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename SCALAR_T>
-    Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertiaInverse(const Eigen::Matrix<SCALAR_T, 6, 6>& Mb)
+    Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertiaInverse(
+      const Eigen::Matrix<SCALAR_T, 6, 6>& Mb)
     {
       const SCALAR_T mass_inv = SCALAR_T(1.0) / Mb(0, 0);
       const Eigen::Matrix<SCALAR_T, 3, 3> cx = mass_inv * Mb.template block<3, 3>(3, 0);
@@ -107,13 +106,15 @@ namespace floating_base_model
       - Ic_inv_cx, Ic_inv;
       
       return Mb_inv;
-    };
+    }
 
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename SCALAR_T>
-    Eigen::Matrix<SCALAR_T, 6, 1> computeBaseBodyAcceleration(const Eigen::Matrix<SCALAR_T, 6, 6>& Mb, const Eigen::Matrix<SCALAR_T, 6, 1>& tau)
+    Eigen::Matrix<SCALAR_T, 6, 1> computeBaseBodyAcceleration(
+      const Eigen::Matrix<SCALAR_T, 6, 6>& Mb,
+      const Eigen::Matrix<SCALAR_T, 6, 1>& tau)
     {
       const SCALAR_T mass_inv = SCALAR_T(1.0) / Mb(0, 0);
       const Eigen::Matrix<SCALAR_T, 3, 3> cx = mass_inv * Mb.template block<3, 3>(3, 0);
@@ -124,7 +125,55 @@ namespace floating_base_model
       baseAcceleration.template block<3,1>(0, 0).noalias() = mass_inv * tau.template block<3, 1>(0, 0) + cx * baseAcceleration.template block<3,1>(3, 0);
 
       return baseAcceleration;
-    };
-  
+    }
+    
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    /******************************************************************************************************/
+    // Explicit template instantiation
+
+    template void computeForceVector(
+      const ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface,
+      const FloatingBaseModelInfoTpl<ocs2::scalar_t>& info,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& input,
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::scalar_t, 0>>& fext);
+    
+    template void computeForceVector(
+      const ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
+      const FloatingBaseModelInfoTpl<ocs2::ad_scalar_t>& info,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& input,
+      pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>>& fext);
+
+    template Eigen::Matrix<ocs2::scalar_t, 6, 1> computeFloatingBaseGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::scalar_t, 0>>& fext);
+
+    template Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> computeFloatingBaseGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>>& fext);
+    
+    template Eigen::Matrix<ocs2::scalar_t, 6, 6> computeFloatingBaseLockedInertia(
+      ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface);
+    
+    template Eigen::Matrix<ocs2::ad_scalar_t, 6, 6> computeFloatingBaseLockedInertia(
+      ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface);
+
+    template Eigen::Matrix<ocs2::scalar_t, 6, 6> computeFloatingBaseLockedInertiaInverse(
+      const Eigen::Matrix<ocs2::scalar_t, 6, 6>& Mb);
+
+    template Eigen::Matrix<ocs2::ad_scalar_t, 6, 6> computeFloatingBaseLockedInertiaInverse(
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 6>& Mb);
+
+    template Eigen::Matrix<ocs2::scalar_t, 6, 1> computeBaseBodyAcceleration(
+      const Eigen::Matrix<ocs2::scalar_t, 6, 6>& Mb,
+      const Eigen::Matrix<ocs2::scalar_t, 6, 1>& tau);
+
+    template Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> computeBaseBodyAcceleration(
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 6>& Mb,
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 1>& tau);
   };
 }; // namespace floating_base_model

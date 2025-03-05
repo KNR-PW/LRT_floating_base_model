@@ -1,7 +1,5 @@
-
-#ifndef _CENTROIDAL_MODEL_INFO_HPP_
-
-#define _CENTROIDAL_MODEL_INFO_HPP_
+#ifndef __FLOATING_BASE_MODEL_INFO_HPP__
+#define __FLOATING_BASE_MODEL_INFO_HPP__
 
 #include <pinocchio/fwd.hpp>
 #include <pinocchio/multibody/data.hpp>
@@ -58,6 +56,7 @@ namespace floating_base_model
   /* Explicit template instantiation for scalar_t and ad_scalar_t */
   extern template struct FloatingBaseModelInfoTpl<ocs2::scalar_t>;
   extern template struct FloatingBaseModelInfoTpl<ocs2::ad_scalar_t>;
+  
 }; // namespace floating_base_model
 
 #endif

@@ -1,5 +1,4 @@
 #ifndef __FLOATING_BASE_MODEL_DYNAMICS_HPP__
-
 #define __FLOATING_BASE_MODEL_DYNAMICS_HPP__
 
 #include <ostream>
