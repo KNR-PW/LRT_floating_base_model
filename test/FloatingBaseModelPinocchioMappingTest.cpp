@@ -147,28 +147,31 @@ TEST(FloatingBaseModelPinocchioMapping, Getters)
   FloatingBaseModelPinocchioMapping mapping(info);
   mapping.setPinocchioInterface(interface);
 
-  const auto state = getAccessTestRobotState();
-  const auto input = getAccessTestRobotInput();
+  for(size_t i = 0; i < numTests; ++i)
+  {
+    ocs2::vector_t state = ocs2::vector_t::Random(Meldog::STATE_DIM);
+    ocs2::vector_t input = ocs2::vector_t::Random(Meldog::INPUT_DIM);
 
-  const auto qPinocchio = mapping.getPinocchioJointPosition(state);
+    const auto qPinocchio = mapping.getPinocchioJointPosition(state);
 
-  Eigen::VectorXd qPinocchioTrue(model.nq);
+    Eigen::VectorXd qPinocchioTrue(model.nq);
 
-  qPinocchioTrue.block<3, 1>(0, 0) = state.block<3,1>(6,0);
-  Eigen::Vector3d eulerAngles = state.block<3, 1>(9, 0);
-  qPinocchioTrue.block<4, 1>(3, 0) = getQuaternionFromEulerAnglesZyx(eulerAngles).coeffs();
-  qPinocchioTrue.block<12, 1>(7, 0) = state.block<12,1>(12,0);
+    qPinocchioTrue.block<3, 1>(0, 0) = state.block<3,1>(6,0);
+    Eigen::Vector3d eulerAngles = state.block<3, 1>(9, 0);
+    qPinocchioTrue.block<4, 1>(3, 0) = getQuaternionFromEulerAnglesZyx(eulerAngles).coeffs();
+    qPinocchioTrue.block<12, 1>(7, 0) = state.block<12,1>(12,0);
 
-  EXPECT_TRUE(qPinocchio .isApprox(qPinocchioTrue, tolerance));
+    EXPECT_TRUE(qPinocchio .isApprox(qPinocchioTrue, tolerance));
 
 
-  const auto vPinocchio = mapping.getPinocchioJointVelocity(state, input);
+    const auto vPinocchio = mapping.getPinocchioJointVelocity(state, input);
 
-  Eigen::VectorXd vPinocchioTrue(model.nv);
-  vPinocchioTrue.block<6, 1>(0, 0) = state.block<6, 1>(0, 0);
-  vPinocchioTrue.block<12, 1>(6, 0) = input.block<12, 1>(18, 0);
+    Eigen::VectorXd vPinocchioTrue(model.nv);
+    vPinocchioTrue.block<6, 1>(0, 0) = state.block<6, 1>(0, 0);
+    vPinocchioTrue.block<12, 1>(6, 0) = input.block<12, 1>(18, 0);
 
-  EXPECT_TRUE(vPinocchio .isApprox(vPinocchioTrue, tolerance));
+    EXPECT_TRUE(vPinocchio .isApprox(vPinocchioTrue, tolerance));
+  }
 
 };
 
@@ -183,46 +186,49 @@ TEST(FloatingBaseModelPinocchioMapping, ocs2Jacobian)
   FloatingBaseModelPinocchioMapping mapping(info);
   mapping.setPinocchioInterface(interface);
 
-  const auto state = getAccessTestRobotState();
-  const auto input = getAccessTestRobotInput();
-
-  const auto qPinocchio = mapping.getPinocchioJointPosition(state);
-
-  std::string frameName = "RFF_link";
-  size_t frameIndex = model.getFrameId(frameName);
-
   std::string modelName = "floating_base_model";
   std::string modelFolder = "tmp/ocs2";
+  std::string frameName = "RFF_link";
+
+  size_t frameIndex = model.getFrameId(frameName);
   PinocchioPartialVelocityDerivativesAD frameVelocityGenAD(interface, info, modelName, frameName, modelFolder, true, true);
-  
-  const auto q = mapping.getPinocchioJointPosition(state);
-  const auto v = mapping.getPinocchioJointVelocity(state, input);
-  
+
   ocs2::vector_t a(model.nv);
   a.setZero();
   
-  Eigen::MatrixXd v_partial_dq(6, model.nv);
-  v_partial_dq.setZero();
+  for(size_t i = 0; i < numTests; ++i)
+  {
+    ocs2::vector_t state = ocs2::vector_t::Random(Meldog::STATE_DIM);
+    ocs2::vector_t input = ocs2::vector_t::Random(Meldog::INPUT_DIM);
+    
+    const auto qPinocchio = mapping.getPinocchioJointPosition(state);
+    
+    const auto q = mapping.getPinocchioJointPosition(state);
+    const auto v = mapping.getPinocchioJointVelocity(state, input);
 
-  Eigen::MatrixXd v_partial_dv(6, model.nv);
-  v_partial_dv.setZero();
-  
-  pinocchio::forwardKinematics(model, data, q, v);
-  pinocchio::computeForwardKinematicsDerivatives(model, data, q, v, a);
-  
-  pinocchio::getFrameVelocityDerivatives(model, data, frameIndex, pinocchio::LOCAL, v_partial_dq, v_partial_dv);
-  
-  ocs2::vector_t frameVelocity = pinocchio::getFrameVelocity(model, data, frameIndex, pinocchio::LOCAL).toVector();
-  ocs2::vector_t frameVelocityAD = frameVelocityGenAD.getValue(0, state, input);
-  
-  EXPECT_TRUE(frameVelocity.isApprox(frameVelocityAD, tolerance));
+    
+    Eigen::MatrixXd v_partial_dq(6, model.nv);
+    v_partial_dq.setZero();
 
-  const auto dv = mapping.getOcs2Jacobian(state, v_partial_dq, v_partial_dv);
-  
-  const auto dvAD = frameVelocityGenAD.getLinearApproximation(0, state, input);
-  
-  EXPECT_TRUE(dv.first.isApprox(dvAD.dfdx, tolerance));
-  EXPECT_TRUE(dv.second.isApprox(dvAD.dfdu, tolerance));
+    Eigen::MatrixXd v_partial_dv(6, model.nv);
+    v_partial_dv.setZero();
+    
+    pinocchio::forwardKinematics(model, data, q, v);
+    pinocchio::computeForwardKinematicsDerivatives(model, data, q, v, a);
+    
+    pinocchio::getFrameVelocityDerivatives(model, data, frameIndex, pinocchio::LOCAL, v_partial_dq, v_partial_dv);
+    
+    ocs2::vector_t frameVelocity = pinocchio::getFrameVelocity(model, data, frameIndex, pinocchio::LOCAL).toVector();
+    ocs2::vector_t frameVelocityAD = frameVelocityGenAD.getValue(0, state, input);
+    
+    EXPECT_TRUE(frameVelocity.isApprox(frameVelocityAD, tolerance));
 
+    const auto dv = mapping.getOcs2Jacobian(state, v_partial_dq, v_partial_dv);
+    
+    const auto dvAD = frameVelocityGenAD.getLinearApproximation(0, state, input);
+    
+    EXPECT_TRUE(dv.first.isApprox(dvAD.dfdx, tolerance));
+    EXPECT_TRUE(dv.second.isApprox(dvAD.dfdu, tolerance));
+  }
 
 };
