@@ -97,6 +97,16 @@ rosdep install --ignore-src --from-paths . -y -r
 ```bash
 colcon build --packages-select floating_base_model
 ```
+## API Documentation
+1. Generate local (in workspace) API documentation using `ros2doc`:
+```bash
+rosdoc2 build --package-path src/floating_base_model
+```
+2. Show documentation in browser e.g. firefox:
+```bash
+firefox docs_output/floating_base_model/index.html
+```
+
 ## Contributing
 1. Change code.
 2. Pass all unit tests:
