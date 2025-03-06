@@ -77,7 +77,7 @@ class PinocchioPartialVelocityDerivativesAD final
      * @param time: time
      * @param state: system state vector
      * @param input: system input vector
-     * @return system flow map x_dot = f(x, u)
+     * @return frame velocity v_f
      */
     ocs2::vector_t getValue(ocs2::scalar_t time,
       const ocs2::vector_t& state,
@@ -93,7 +93,7 @@ class PinocchioPartialVelocityDerivativesAD final
      * @param time: time
      * @param state: system state vector
      * @param input: system input vector
-     * @return linear approximation of system flow map x_dot = f(x, u)
+     * @return linear approximation of frame velocity v_f
      */
     ocs2::VectorFunctionLinearApproximation getLinearApproximation(ocs2::scalar_t time,
       const ocs2::vector_t& state,
