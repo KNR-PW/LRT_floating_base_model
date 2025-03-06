@@ -70,7 +70,7 @@ where:
 - $\boldsymbol{J}_{B, i}$: robots end-effector jacobian matrix
 - $\boldsymbol{f}_{ext}$: external force acting on robot end-effectors
 - $\boldsymbol{\tau}_{ext}$: external torque acting on robot end-effectors
-- $\boldsymbol{M}_B$: $6 \times 6$ spatial inertia matrix called "Floating Base Locked Spatial Inertia Matrix" [0]
+- $\boldsymbol{M}_B$: $6 \times 6$ "spatial" inertia matrix called "Floating Base Locked Spatial Inertia Matrix" [0]
 - $\boldsymbol{aba}_Bv(...)$, $\boldsymbol{aba}_Bw(...)$: equation for solving "spatial" base acceleration [0]
 
 ## ROS 2 versions
