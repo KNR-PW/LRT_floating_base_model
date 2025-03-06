@@ -14,7 +14,8 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(ament_cmake REQUIRED)
 
 set(THIS_PACKAGE_DEPENDS
-  ocs2_pinocchio_interface 
+  ocs2_pinocchio_interface
+  ocs2_robotic_tools 
   ocs2_centroidal_model
 )
 
