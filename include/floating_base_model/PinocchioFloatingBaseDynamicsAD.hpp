@@ -87,6 +87,6 @@ namespace floating_base_model
     std::unique_ptr<ocs2::CppAdInterface> systemFlowMapCppAdInterfacePtr_;
   };
 
-}  // namespace floating_base_model
+};  // namespace floating_base_model
 
 #endif

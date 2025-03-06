@@ -62,147 +62,174 @@ int main()
   q[6] = quaterion.w();
   Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> dq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
   Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> tau = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
-  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> ddq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Zero(model.nv);
+  Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic> ddq = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nv);
 
 
-  
-  ocs2::vector_t input(24);
-  ocs2::vector_t state(24);
-  
-  input = ocs2::vector_t::Random(24);
-  state = ocs2::vector_t::Random(24);
-  
-  Eigen::Vector<ocs2::scalar_t, 3> eulerAngles = Eigen::Vector<ocs2::scalar_t, 3>::Random();
-  ocs2::makeEulerAnglesUnique(eulerAngles);
-  state.block<3,1>(9, 0) = eulerAngles;
-  
-  floating_base_model::PinocchioFloatingBaseDynamics dynamics(info);
-  dynamics.setPinocchioInterface(interface);
+  size_t feetIndex = model.getFrameId("trunk_link");
 
-  std::string modelName = "floating_base_model";
-  std::string modelFolder = "tmp/ocs2";
-  floating_base_model::PinocchioFloatingBaseDynamicsAD dynamics_ad(interface, info, modelName, modelFolder, true, true);
+  Eigen::MatrixXd v_partial_dq(6, model.nv);
+  v_partial_dq.setZero();
 
-  auto start = std::chrono::high_resolution_clock::now();
-  for(int i = 0; i < 10000; ++i)
+  Eigen::MatrixXd v_partial_dv(6, model.nv);
+  v_partial_dv.setZero();
+
+  pinocchio::forwardKinematics(model, data, q, dq, ddq);
+  pinocchio::computeForwardKinematicsDerivatives(model, data, q, dq, ddq);
+
+  pinocchio::getFrameVelocityDerivatives(model, data, feetIndex, pinocchio::LOCAL, v_partial_dq, v_partial_dv);
+  Eigen::Vector<double,6> frameAcelerationTrue = pinocchio::getFrameAcceleration(model, data, feetIndex, pinocchio::LOCAL);
+
+  Eigen::Vector<double,6> frameAceleration = v_partial_dq * dq + v_partial_dv * ddq;
+  std::cout << "PORÓWNANIE: " << std::endl;
+  std::cout << "TRUE, MINE " << std::endl;
+  for(size_t i = 0; i < 6; ++i)
   {
-    state.setRandom();
-    input.setRandom();
-    const auto value = dynamics.getValue(0, state, input);
+    std::cout << frameAcelerationTrue[i] << ", " << frameAceleration[i] << std::endl;
   }
-  auto stop = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-  std::cout << "Porównanie: " << std::endl;
-  std::cout << "Klasyczny: " << duration.count() << std::endl;
   
-  start = std::chrono::high_resolution_clock::now();
-  for(int i = 0; i < 10000; ++i)
-  {
-    state.setRandom();
-    input.setRandom();
-    const auto value_ad = dynamics_ad.getValue(0, state, input);
-  }
-  stop = std::chrono::high_resolution_clock::now();
-  duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-  std::cout << "AutoDiff: " << duration.count() << std::endl;
 
-
-  //std::cout << value - value_ad << std::endl;
-
-  const auto linearAproximation = dynamics_ad.getLinearApproximation(0, state, input);
-  std::cout << "Liniowa aproksymacja" << std::endl;
-  std::cout << linearAproximation.dfdx << std::endl;
-
-  //const auto value_1 = dynamics.getValue2(0, state, input);
-  std::cout << "TEST: " << std::endl;
-  //std::cout << value - value_1 << std::endl;
-  std::cout << "AAAA" << std::endl;
-
-  std::cout << pinocchio::rnea(model, data, q, dq, ddq) - pinocchio::nonLinearEffects(model, data, q, dq) << std::endl;
-  pinocchio::Force zero_force(Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
-  pinocchio::container::aligned_vector<pinocchio::Force> fext(model.njoints, zero_force);
-  std::cout << "AAAA" << std::endl;
-  floating_base_model::model_helper_functions::computeForceVector(interface, info, input, fext);
-  std::cout << "AAAA" << std::endl;
-  floating_base_model::FloatingBaseModelPinocchioMapping mapping(info);
-  std::cout << "AAAA" << std::endl;
-  mapping.setPinocchioInterface(interface);
-  q = mapping.getPinocchioJointPosition(state);
-  dq = mapping.getPinocchioJointVelocity(state, input);
+  std::cout << "dq" << std::endl;
+  std::cout << v_partial_dq << std::endl;
+  std::cout << "dv" << std::endl;
+  std::cout << v_partial_dv << std::endl;
   
-  pinocchio::forwardKinematics(model, data, q);
-  pinocchio::updateFramePlacements(model, data);
-  pinocchio::computeJointJacobians(model, data);
-  std::cout << "AAAA" << std::endl;
-  Eigen::Vector<ocs2::scalar_t, 6> tau_1 = Eigen::Vector<ocs2::scalar_t, 6>::Zero();
-  //tau_1 = pinocchio::nonLinearEffects(model, data, q, dq).block<6,1>(0,0);
-  for (size_t i = 0; i < info.numThreeDofContacts; i++) {
-    const auto forceWorldFrame = floating_base_model::access_helper_functions::getContactForces(input, i, info);
-    size_t contactFrameIndex = info.endEffectorFrameIndices[i];
-    pinocchio::Data::Matrix6x J(6, model.nv);
-    J.setZero();
-    pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
-    
-    std::cout << "Jacobian: " << contactFrameIndex << ": " << "\n" << J.transpose().block<6,3>(0,0) << std::endl;
-    tau_1 += -J.transpose().block<6,3>(0,0) * forceWorldFrame;
-  }  
-  std::cout << "4" << std::endl;
-  // for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) {
-  //   const Eigen::Block<Eigen::VectorXd, 6, 1> wrenchWorldFrame = floating_base_model::access_helper_functions::getContactWrenches(input, i, info);
+  // ocs2::vector_t input(24);
+  // ocs2::vector_t state(24);
+  
+  // input = ocs2::vector_t::Random(24);
+  // state = ocs2::vector_t::Random(24);
+  
+  // Eigen::Vector<ocs2::scalar_t, 3> eulerAngles = Eigen::Vector<ocs2::scalar_t, 3>::Random();
+  // ocs2::makeEulerAnglesUnique(eulerAngles);
+  // state.block<3,1>(9, 0) = eulerAngles;
+  
+  // floating_base_model::PinocchioFloatingBaseDynamics dynamics(info);
+  // dynamics.setPinocchioInterface(interface);
+
+  // std::string modelName = "floating_base_model";
+  // std::string modelFolder = "tmp/ocs2";
+  // floating_base_model::PinocchioFloatingBaseDynamicsAD dynamics_ad(interface, info, modelName, modelFolder, true, true);
+
+  // auto start = std::chrono::high_resolution_clock::now();
+  // for(int i = 0; i < 10000; ++i)
+  // {
+  //   state.setRandom();
+  //   input.setRandom();
+  //   const auto value = dynamics.getValue(0, state, input);
+  // }
+  // auto stop = std::chrono::high_resolution_clock::now();
+  // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  // std::cout << "Porównanie: " << std::endl;
+  // std::cout << "Klasyczny: " << duration.count() << std::endl;
+  
+  // start = std::chrono::high_resolution_clock::now();
+  // for(int i = 0; i < 10000; ++i)
+  // {
+  //   state.setRandom();
+  //   input.setRandom();
+  //   const auto value_ad = dynamics_ad.getValue(0, state, input);
+  // }
+  // stop = std::chrono::high_resolution_clock::now();
+  // duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  // std::cout << "AutoDiff: " << duration.count() << std::endl;
+
+
+  // //std::cout << value - value_ad << std::endl;
+
+  // const auto linearAproximation = dynamics_ad.getLinearApproximation(0, state, input);
+  // std::cout << "Liniowa aproksymacja" << std::endl;
+  // std::cout << linearAproximation.dfdx << std::endl;
+
+  // //const auto value_1 = dynamics.getValue2(0, state, input);
+  // std::cout << "TEST: " << std::endl;
+  // //std::cout << value - value_1 << std::endl;
+  // std::cout << "AAAA" << std::endl;
+
+  // std::cout << pinocchio::rnea(model, data, q, dq, ddq) - pinocchio::nonLinearEffects(model, data, q, dq) << std::endl;
+  // pinocchio::Force zero_force(Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
+  // pinocchio::container::aligned_vector<pinocchio::Force> fext(model.njoints, zero_force);
+  // std::cout << "AAAA" << std::endl;
+  // floating_base_model::model_helper_functions::computeForceVector(interface, info, input, fext);
+  // std::cout << "AAAA" << std::endl;
+  // floating_base_model::FloatingBaseModelPinocchioMapping mapping(info);
+  // std::cout << "AAAA" << std::endl;
+  // mapping.setPinocchioInterface(interface);
+  // q = mapping.getPinocchioJointPosition(state);
+  // dq = mapping.getPinocchioJointVelocity(state, input);
+  
+  // pinocchio::forwardKinematics(model, data, q);
+  // pinocchio::updateFramePlacements(model, data);
+  // pinocchio::computeJointJacobians(model, data);
+  // std::cout << "AAAA" << std::endl;
+  // Eigen::Vector<ocs2::scalar_t, 6> tau_1 = Eigen::Vector<ocs2::scalar_t, 6>::Zero();
+  // //tau_1 = pinocchio::nonLinearEffects(model, data, q, dq).block<6,1>(0,0);
+  // for (size_t i = 0; i < info.numThreeDofContacts; i++) {
+  //   const auto forceWorldFrame = floating_base_model::access_helper_functions::getContactForces(input, i, info);
   //   size_t contactFrameIndex = info.endEffectorFrameIndices[i];
-  //   const auto jacobian_T = pinocchio::getFrameJacobian(model, data, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED).transpose();
-  //   tau_1 += -jacobian_T.block<6,6>(0,0) * wrenchWorldFrame;
+  //   pinocchio::Data::Matrix6x J(6, model.nv);
+  //   J.setZero();
+  //   pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
+    
+  //   std::cout << "Jacobian: " << contactFrameIndex << ": " << "\n" << J.transpose().block<6,3>(0,0) << std::endl;
+  //   tau_1 += -J.transpose().block<6,3>(0,0) * forceWorldFrame;
   // }  
-  std::cout << "AAAA" << std::endl;
-  std::cout << "TEST TAU:" << std::endl;
-  std::cout << tau_1 << std::endl;
-  std::cout << pinocchio::computeStaticTorque(model, data, q, fext).block<6,1>(0,0) - pinocchio::computeGeneralizedGravity(model, data, q).block<6,1>(0,0)   << std::endl;
-  std::cout << "AAAA" << std::endl;
-  pinocchio::forwardKinematics(model, data, q);
-  pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
+  // std::cout << "4" << std::endl;
+  // // for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) {
+  // //   const Eigen::Block<Eigen::VectorXd, 6, 1> wrenchWorldFrame = floating_base_model::access_helper_functions::getContactWrenches(input, i, info);
+  // //   size_t contactFrameIndex = info.endEffectorFrameIndices[i];
+  // //   const auto jacobian_T = pinocchio::getFrameJacobian(model, data, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED).transpose();
+  // //   tau_1 += -jacobian_T.block<6,6>(0,0) * wrenchWorldFrame;
+  // // }  
+  // std::cout << "AAAA" << std::endl;
+  // std::cout << "TEST TAU:" << std::endl;
+  // std::cout << tau_1 << std::endl;
+  // std::cout << pinocchio::computeStaticTorque(model, data, q, fext).block<6,1>(0,0) - pinocchio::computeGeneralizedGravity(model, data, q).block<6,1>(0,0)   << std::endl;
+  // std::cout << "AAAA" << std::endl;
+  // pinocchio::forwardKinematics(model, data, q);
+  // pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
 
-  Eigen::Matrix<double, 6, 6> Mb_1 = data.M.block<6,6>(0, 0);
+  // Eigen::Matrix<double, 6, 6> Mb_1 = data.M.block<6,6>(0, 0);
 
-  q = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nq);
-  Eigen::Quaternion quaterion2(q[6], q[3], q[4], q[5]);
-  quaterion2.normalize();
-  q[3] = quaterion2.x();
-  q[4] = quaterion2.y();
-  q[5] = quaterion2.z();
-  q[6] = quaterion2.w();
+  // q = Eigen::Vector<ocs2::scalar_t, Eigen::Dynamic>::Random(model.nq);
+  // Eigen::Quaternion quaterion2(q[6], q[3], q[4], q[5]);
+  // quaterion2.normalize();
+  // q[3] = quaterion2.x();
+  // q[4] = quaterion2.y();
+  // q[5] = quaterion2.z();
+  // q[6] = quaterion2.w();
 
-  pinocchio::forwardKinematics(model, data, q);
-  start = std::chrono::high_resolution_clock::now();
-  for(int i = 0; i < 1000; ++i)
-  {
-    pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
-  }
-  stop = std::chrono::high_resolution_clock::now();
-  duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-  std::cout << "Algo1: " << duration.count() << std::endl;
-  // Eigen::Matrix<double, 6, 6> Mb_2 = data.M.block<6,6>(0, 0);
+  // pinocchio::forwardKinematics(model, data, q);
+  // start = std::chrono::high_resolution_clock::now();
+  // for(int i = 0; i < 1000; ++i)
+  // {
+  //   pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
+  // }
+  // stop = std::chrono::high_resolution_clock::now();
+  // duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  // std::cout << "Algo1: " << duration.count() << std::endl;
+  // // Eigen::Matrix<double, 6, 6> Mb_2 = data.M.block<6,6>(0, 0);
 
-  // std::cout << "MB1:" << std::endl;
-  // std::cout << Mb_1 << std::endl;
+  // // std::cout << "MB1:" << std::endl;
+  // // std::cout << Mb_1 << std::endl;
 
-  // std::cout << "MB2:" << std::endl;
-  // std::cout << Mb_2 << std::endl;
+  // // std::cout << "MB2:" << std::endl;
+  // // std::cout << Mb_2 << std::endl;
 
-  // std::cout << "MB1 - MB2:" << std::endl;
-  // std::cout << Mb_1 - Mb_2 << std::endl;
+  // // std::cout << "MB1 - MB2:" << std::endl;
+  // // std::cout << Mb_1 - Mb_2 << std::endl;
 
-  // pinocchio::centerOfMass(model, data, true);
-  // Eigen::Vector3d r_com = data.com[1];
-  // // DZIALA!!!!!!
-  Eigen::Matrix<double, 6, 6> Mb_moje;
-  start = std::chrono::high_resolution_clock::now();
-  for(int j = 0; j < 1000; ++j)
-  {
-    Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
-  }
-  stop = std::chrono::high_resolution_clock::now();
-  duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-  std::cout << "Algo2: " << duration.count() << std::endl;
+  // // pinocchio::centerOfMass(model, data, true);
+  // // Eigen::Vector3d r_com = data.com[1];
+  // // // DZIALA!!!!!!
+  // Eigen::Matrix<double, 6, 6> Mb_moje;
+  // start = std::chrono::high_resolution_clock::now();
+  // for(int j = 0; j < 1000; ++j)
+  // {
+  //   Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
+  // }
+  // stop = std::chrono::high_resolution_clock::now();
+  // duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  // std::cout << "Algo2: " << duration.count() << std::endl;
 
   // std::cout << "MB_moje - MB2:" << std::endl;
   // std::cout << (Mb_moje - Mb_2).norm() << std::endl;
@@ -484,6 +511,8 @@ int main()
   // //auto Mb_moje = floating_base_model::model_helper_functions::computeFloatingBaseLockedInertia(interface, q);
 
   // std::cout << Mb_p - Mb_moje << std::endl;
+
+
 
   return 0;
 }
