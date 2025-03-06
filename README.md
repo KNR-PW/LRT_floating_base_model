@@ -45,8 +45,8 @@ Equations of dynamics (System Flow Map):
 \frac{d\boldsymbol{q}_E}{dt} \\
 \frac{d\boldsymbol{q}_j}{dt} 
 \end{bmatrix} = \begin{bmatrix}
-\boldsymbol{aba}_Bv(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
-\boldsymbol{aba}_Bw(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) \\
+\boldsymbol{aba}_B(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext})[0:2] +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
+\boldsymbol{aba}_B(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext})[3:5] \\
 \boldsymbol{R}^0_B(\boldsymbol{q}_E)\boldsymbol{v}^B_B \\
 \boldsymbol{E}(\boldsymbol{q}_E)\boldsymbol{w}^B_B \\
 \dot{\boldsymbol{q}}_j
@@ -54,10 +54,7 @@ Equations of dynamics (System Flow Map):
 ```
 ```math
 \boldsymbol{aba}_B(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) =
-\begin{bmatrix}
-\boldsymbol{aba}_Bv(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) \\
-\boldsymbol{aba}_Bw(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext})
-\end{bmatrix} = \boldsymbol{M}^{-1}_B \big( - \boldsymbol{C}(\boldsymbol{q}, \dot{\boldsymbol{q}}) \dot{\boldsymbol{q}} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{f}_{ext_i} + \sum_{i \in C}\boldsymbol{\tau}_{ext_i} \big)
+\boldsymbol{M}^{-1}_B \big( - \boldsymbol{C}(\boldsymbol{q}, \dot{\boldsymbol{q}}) \dot{\boldsymbol{q}} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{f}_{ext_i} + \sum_{i \in C}\boldsymbol{\tau}_{ext_i} \big)
 ```
 
 where:
@@ -73,7 +70,7 @@ where:
 - $\boldsymbol{J}_{B, i}$: robots end-effector jacobian matrix
 - $\boldsymbol{f}_{ext}$: external force acting on robot end-effectors
 - $\boldsymbol{\tau}_{ext}$: external torque acting on robot end-effectors
-- $\boldsymbol{M}_B$: $6 \times 6$ inertia matrix called "Floating Base Locked Inertia Matrix" 
+- $\boldsymbol{M}_B$: $6 \times 6$ spatial inertia matrix called "Floating Base Locked Spatial Inertia Matrix" [0]
 - $\boldsymbol{aba}_Bv(...)$, $\boldsymbol{aba}_Bw(...)$: equation for solving "spatial" base acceleration [0]
 
 ## ROS 2 versions
