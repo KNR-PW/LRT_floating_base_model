@@ -7,18 +7,18 @@ This project provides a [ocs2](https://github.com/leggedrobotics/ocs2) model of 
 ```
 where:
 - t: time
-- $\boldsymbol{x}$: system state vector:
+- $\boldsymbol{x}$: system state vector
 ```math
 \boldsymbol{x} =
 \begin{bmatrix}
 \boldsymbol{v}^B_B\ \\
-\boldsymbol{w}^B_B\ \\
+\boldsymbol{\omega}^B_B\ \\
 \boldsymbol{r}^0_B \\
 \boldsymbol{q}_E \\
 \boldsymbol{q}_j 
 \end{bmatrix}
 ```
-- $\boldsymbol{u}$: input state vector:
+- $\boldsymbol{u}$: input state vector
 ```math
 \boldsymbol{u} =
 \begin{bmatrix}
@@ -35,43 +35,68 @@ where:
 ```
 
 
-Equations of dynamics (System Flow Map):
+Equations of dynamics (System Flow Map)
 ```math
 \dot{\boldsymbol{x}} = 
 \begin{bmatrix}
 \frac{d\boldsymbol{v}^B_B}{dt}\ \\
-\frac{d\boldsymbol{w}^B_B}{dt}\ \\
+\frac{d\boldsymbol{\omega}^B_B}{dt}\ \\
 \frac{d\boldsymbol{r}^0_B}{dt} \\
 \frac{d\boldsymbol{q}_E}{dt} \\
 \frac{d\boldsymbol{q}_j}{dt} 
 \end{bmatrix} = \begin{bmatrix}
-\boldsymbol{aba}_B(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext})[0:2] +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
-\boldsymbol{aba}_B(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext})[3:5] \\
+\boldsymbol{aba}_{B_v}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
+\boldsymbol{aba}_{B_w}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) \\
 \boldsymbol{R}^0_B(\boldsymbol{q}_E)\boldsymbol{v}^B_B \\
 \boldsymbol{E}(\boldsymbol{q}_E)\boldsymbol{w}^B_B \\
 \dot{\boldsymbol{q}}_j
 \end{bmatrix}
 ```
 ```math
-\boldsymbol{aba}_B(\boldsymbol{q}, \dot{\boldsymbol{q}}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) =
-\boldsymbol{M}^{-1}_B \big( - \boldsymbol{C}(\boldsymbol{q}, \dot{\boldsymbol{q}}) \dot{\boldsymbol{q}} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{f}_{ext_i} + \sum_{i \in C}\boldsymbol{\tau}_{ext_i} \big)
+\boldsymbol{aba}_{B}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) =
+\boldsymbol{M}^{-1}_B \big(-\boldsymbol{C}(\boldsymbol{q}, \boldsymbol{v}) \boldsymbol{v} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{F}_{ext_i} \big)
 ```
+```math
+\boldsymbol{q} =
+\begin{bmatrix}
+\boldsymbol{r}^0_B \\
+\boldsymbol{q}_Q \\
+\boldsymbol{q}_j 
+\end{bmatrix}
+,
 
+\boldsymbol{v} =
+\begin{bmatrix}
+\boldsymbol{v}^B_B \\
+\boldsymbol{\omega}^B_B \\
+\dot{\boldsymbol{q}_j}
+\end{bmatrix}
+,
+
+\boldsymbol{F}_{ext_i} =
+\begin{bmatrix}
+\boldsymbol{f}_{ext_i} \\
+\boldsymbol{\tau}_{ext_i}
+\end{bmatrix}
+```
 where:
 - $\boldsymbol{v}^B_B$: base linear "classical" velocity expressed in base frame of reference ($B$) [0]
-- $\boldsymbol{w}^B_B$: base angular "classical" velocity expressed in base frame of reference ($B$) [0]
+- $\boldsymbol{\omega}^B_B$: base angular "classical" velocity expressed in base frame of reference ($B$) [0]
 - $\boldsymbol{r}^0_B$: base position from inertial frame expressed in inertial frame of reference ($0$)
-- $\boldsymbol{q}_E$: base orientation from inertial frame defined in [ZYX Euler angles](https://web.mit.edu/2.05/www/Handout/HO2.PDF) 
+- $\boldsymbol{q}_E$: base orientation from inertial frame defined in [ZYX Euler angles](https://web.mit.edu/2.05/www/Handout/HO2.PDF)
+- $\boldsymbol{q}_Q$: base orientation from inertial frame defined in [quaterions](https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation)
 - $\boldsymbol{q}_j$: actuated joint positions
+- $\dot{\boldsymbol{q}_j}$: actuated joint velocities
 - $\boldsymbol{q}$: generalized positions of pinocchio multibody system 
-- $\boldsymbol{q}$: generalized velocities of pinocchio multibody system
+- $\boldsymbol{v}$: generalized velocities of pinocchio multibody system
 - $\boldsymbol{R}^0_B(\boldsymbol{q}_E)$: base to inertial frame rotation matrix
 - $\boldsymbol{E}(\boldsymbol{q}_E)$: matrix that maps base angular "classical" velocity expressed in base frame of reference to derivative of ZYX Euler angles
-- $\boldsymbol{J}_{B, i}$: robots end-effector jacobian matrix
+- $\boldsymbol{J}_{B, i}$: robots end-effector "spatial" jacobian matrix [0]
 - $\boldsymbol{f}_{ext}$: external force acting on robot end-effectors
 - $\boldsymbol{\tau}_{ext}$: external torque acting on robot end-effectors
-- $\boldsymbol{M}_B$: $6 \times 6$ "spatial" inertia matrix called "Floating Base Locked Spatial Inertia Matrix" [0]
-- $\boldsymbol{aba}_Bv(...)$, $\boldsymbol{aba}_Bw(...)$: equation for solving "spatial" base acceleration [0]
+- $\boldsymbol{F}_{ext_i}$: external "spatial" force acting on robot end-effectors [0]
+- $\boldsymbol{M}_B$: $6 \times 6$ "spatial" inertia matrix called "Locked Spatial Inertia Matrix" [0]
+- $\boldsymbol{aba}_{B}(...)$: equation for solving "spatial" base acceleration ($v$ is linear and $\omega$ is angular part of equation) [0]
 
 ## ROS 2 versions
 - All 
@@ -125,3 +150,7 @@ Predictive Control”, (submitted to) IEEE Trans. Robot., no. August, 2022, doi:
 [2] J. P. Sleiman, F. Farshidian, M. V. Minniti, and M. Hutter, “A Unified MPC Framework for Whole-Body Dynamic
 Locomotion and Manipulation”, IEEE Robot. Autom. Lett., vol. 6, no. 3, pp. 4688–4695, 2021, doi:
 10.1109/LRA.2021.3068908.
+
+[3] S. Stramigioli, V. Duindam, G. van Oort, and A. Goswami, “Compact
+Analysis of 3D Bipedal Gait Using Geometric Dynamics of Simplified
+Models,” in Robotics and Automation, 2009. ICRA ’09. IEEE International Conference on, May 2009, pp. 1978–1984.
