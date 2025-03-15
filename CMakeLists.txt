@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16 )
+cmake_minimum_required(VERSION 3.16)
 project(floating_base_model LANGUAGES CXX)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -7,6 +7,12 @@ endif()
 
 
 set(CMAKE_CXX_STANDARD 17)
+
+# Resolve for the package path at compile time.
+configure_file (
+  "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/path_management/package_path.h.in"
+  "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/path_management/package_path.h" @ONLY
+)
 
 ##################
 ## Dependencies ##
@@ -36,8 +42,6 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-include_directories(include)
-
 add_library(${PROJECT_NAME}
   src/FloatingBaseModelInfo.cpp
   src/FactoryFunctions.cpp
@@ -46,16 +50,16 @@ add_library(${PROJECT_NAME}
   src/FloatingBaseModelPinocchioMapping.cpp
   src/PinocchioFloatingBaseDynamics.cpp
   src/PinocchioFloatingBaseDynamicsAD.cpp
-  # src/main.cpp
 )
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+)
+
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_DEPENDS})
 target_compile_options(${PROJECT_NAME} PUBLIC ${FLAGS})
-
-# Resolve for the package path at compile time.
-configure_file (
-  "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/path_management/package_path.h.in"
-  "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/path_management/package_path.h" @ONLY
-)
 
 
 #########################
@@ -88,13 +92,15 @@ install(
   DIRECTORY include/
   DESTINATION include/${PROJECT_NAME}
 )
-ament_export_dependencies(${dependencies})
+
+ament_export_dependencies(${THIS_PACKAGE_DEPENDS})
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
 
 #############
 ## Testing ##
 #############
+
 # find_package(ament_lint_auto REQUIRED)
 # ament_lint_auto_find_test_dependencies()
 
