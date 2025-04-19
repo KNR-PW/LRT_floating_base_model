@@ -22,6 +22,15 @@ namespace quaterion_euler_transforms
   Eigen::Quaternion<SCALAR_T> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx);
 
   /**
+   * Computes mapping from rotation matrxi to ZYX euler angles
+   *
+   * @param rotationMatrix: rotation matrix
+   * @return quaterion
+   */
+  template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 3, 1> getEulerAnglesFromRotationMatrix(const Eigen::Matrix<SCALAR_T, 3, 3>& rotationMatrix);
+
+  /**
    * Computes mapping from ZYX euler angles to quaterion derivative
    * with respect to ZYX euler angles
    *
@@ -97,6 +106,9 @@ namespace quaterion_euler_transforms
   /* Explicit template instantiation for scalar_t and ad_scalar_t */
   extern template Eigen::Quaternion<ocs2::scalar_t> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<ocs2::scalar_t, 3, 1>& eulerAnglesZyx);
   extern template Eigen::Quaternion<ocs2::ad_scalar_t> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1>& eulerAnglesZyx);
+
+  extern template Eigen::Matrix<ocs2::scalar_t, 3, 1> getEulerAnglesFromRotationMatrix(const Eigen::Matrix<ocs2::scalar_t, 3, 3>& rotationMatrix);
+  extern template Eigen::Matrix<ocs2::ad_scalar_t, 3, 1> getEulerAnglesFromRotationMatrix(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 3>& rotationMatrix);
 
   extern template Eigen::Matrix<ocs2::scalar_t, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<ocs2::scalar_t, 3, 1>& eulerAnglesZyx);
   extern template Eigen::Matrix<ocs2::ad_scalar_t, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1>& eulerAnglesZyx);

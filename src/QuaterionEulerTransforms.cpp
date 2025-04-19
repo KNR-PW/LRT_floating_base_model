@@ -19,6 +19,28 @@ namespace quaterion_euler_transforms
   /******************************************************************************************************/
   /******************************************************************************************************/
   template <typename SCALAR_T>
+  Eigen::Matrix<SCALAR_T, 3, 1> getEulerAnglesFromRotationMatrix(const Eigen::Matrix<SCALAR_T, 3, 3>& rotationMatrix)
+  {
+    Eigen::Matrix<SCALAR_T, 3, 1> eulerAngles;
+    if(rotationMatrix(0, 0) == 0 && rotationMatrix(1, 0) == 0)
+    {
+      eulerAngles(0) = 0;
+      eulerAngles(1) = M_PI_2;
+      eulerAngles(2) = atan2(rotationMatrix(0, 1), rotationMatrix(1, 1));
+    }
+    else
+    {
+      SCALAR_T temp = sqrt(rotationMatrix(0, 0) * rotationMatrix(0, 0) + rotationMatrix(1, 0) * rotationMatrix(1, 0));
+      eulerAngles(0) = atan2(rotationMatrix(1, 0), rotationMatrix(0, 0));
+      eulerAngles(1) = atan2(-rotationMatrix(2, 0), temp);
+      eulerAngles(2) = atan2(rotationMatrix(2, 1), rotationMatrix(2, 2));
+    }
+    return eulerAngles;
+  }
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  template <typename SCALAR_T>
   Eigen::Matrix<SCALAR_T, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<SCALAR_T, 3, 1>& eulerAnglesZyx)
   {
     const SCALAR_T half = SCALAR_T(0.5);
@@ -263,6 +285,9 @@ namespace quaterion_euler_transforms
 
   template Eigen::Quaternion<ocs2::scalar_t> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<ocs2::scalar_t, 3, 1>& eulerAnglesZyx);
   template Eigen::Quaternion<ocs2::ad_scalar_t> getQuaternionFromEulerAnglesZyx(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1>& eulerAnglesZyx);
+
+  template Eigen::Matrix<ocs2::scalar_t, 3, 1> getEulerAnglesFromRotationMatrix(const Eigen::Matrix<ocs2::scalar_t, 3, 3>& rotationMatrix);
+  template Eigen::Matrix<ocs2::ad_scalar_t, 3, 1> getEulerAnglesFromRotationMatrix(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 3>& rotationMatrix);
 
   template Eigen::Matrix<ocs2::scalar_t, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<ocs2::scalar_t, 3, 1>& eulerAnglesZyx);
   template Eigen::Matrix<ocs2::ad_scalar_t, 4, 3> getQuaternionFromEulerAnglesZyxGradient(const Eigen::Matrix<ocs2::ad_scalar_t, 3, 1>& eulerAnglesZyx);

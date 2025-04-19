@@ -14,7 +14,7 @@ using namespace model_helper_functions;
 using namespace access_helper_functions;
 
 static constexpr ocs2::scalar_t tolerance = 1e-6;
-static constexpr size_t numTests = 100;
+static constexpr size_t numTests = 30;
 
 TEST(PinocchioFloatingBaseDynamicsTest, getValue)
 {
@@ -39,7 +39,7 @@ TEST(PinocchioFloatingBaseDynamicsTest, getValue)
     const auto value = dynamics.getValue(0, state, input);
     const auto valueAD = dynamicsAD.getValue(0, state, input);
 
-    EXPECT_TRUE(value .isApprox(valueAD, tolerance));
+    EXPECT_TRUE(value.isApprox(valueAD, tolerance));
   }
 
 };

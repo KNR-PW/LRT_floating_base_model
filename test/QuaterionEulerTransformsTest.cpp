@@ -61,6 +61,16 @@ TEST(QuaterionEulerTransformsTest, QuaterionAndEulerConversions)
   ASSERT_NEAR(norm, 0.0, 1e-6);
 };
 
+
+TEST(QuaterionEulerTransformsTest, RotationMatrixEulerConversions)
+{
+  Eigen::Vector3d eulerAngles = Eigen::Vector3d::Random();
+  const auto rotationMatrixEuler = ocs2::getRotationMatrixFromZyxEulerAngles(eulerAngles);
+  Eigen::Vector3d eulerAnglesCalculated = getEulerAnglesFromRotationMatrix(rotationMatrixEuler);
+  const auto norm = (eulerAnglesCalculated - eulerAngles).norm();
+  ASSERT_NEAR(norm, 0.0, 1e-6);
+};
+
 TEST(QuaterionEulerTransformsTest, QuaterionAndEulerMappings)
 {
   Eigen::Vector3d eulerAngles = Eigen::Vector3d::Random();
