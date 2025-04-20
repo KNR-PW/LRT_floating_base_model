@@ -3,7 +3,7 @@
 ## Introduction
 This project provides a [ocs2](https://github.com/leggedrobotics/ocs2) model of dynamics (system flow map) for legged robots using floating base model [1] [2]:
 ```math
-\dot{\boldsymbol{x}} = \boldsymbol{f}(t, \boldsymbol{x}, \boldsymbol{u})
+\dot{\boldsymbol{x}} = \boldsymbol{f}(t, \boldsymbol{x}, \boldsymbol{u}, \boldsymbol{d})
 ```
 where:
 - t: time
@@ -33,7 +33,14 @@ where:
 \dot{\boldsymbol{q}}_j
 \end{bmatrix}
 ```
-
+- $\boldsymbol{d}$: disturbance vector
+```math
+\boldsymbol{d} =
+\begin{bmatrix}
+\boldsymbol{f}_{ext_{B}} \\
+\boldsymbol{\tau}_{ext_B} 
+\end{bmatrix}
+```
 
 Equations of dynamics (System Flow Map)
 ```math
@@ -45,16 +52,16 @@ Equations of dynamics (System Flow Map)
 \frac{d\boldsymbol{q}_E}{dt} \\
 \frac{d\boldsymbol{q}_j}{dt} 
 \end{bmatrix} = \begin{bmatrix}
-\boldsymbol{aba}_{B_v}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
-\boldsymbol{aba}_{B_w}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) \\
+\boldsymbol{aba}_{B_v}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
+\boldsymbol{aba}_{B_w}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) \\
 \boldsymbol{R}^0_B(\boldsymbol{q}_E)\boldsymbol{v}^B_B \\
 \boldsymbol{E}(\boldsymbol{q}_E)\boldsymbol{w}^B_B \\
 \dot{\boldsymbol{q}}_j
 \end{bmatrix}
 ```
 ```math
-\boldsymbol{aba}_{B}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}) =
-\boldsymbol{M}^{-1}_B \big(-\boldsymbol{C}(\boldsymbol{q}, \boldsymbol{v}) \boldsymbol{v} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{F}_{ext_i} \big)
+\boldsymbol{aba}_{B}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) =
+\boldsymbol{M}^{-1}_B \big(-\boldsymbol{C}(\boldsymbol{q}, \boldsymbol{v}) \boldsymbol{v} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{F}_{ext_i} + \boldsymbol{F}_{ext_B} \big)
 ```
 ```math
 \boldsymbol{q} =
@@ -78,7 +85,15 @@ Equations of dynamics (System Flow Map)
 \boldsymbol{f}_{ext_i} \\
 \boldsymbol{\tau}_{ext_i}
 \end{bmatrix}
+,
+
+\boldsymbol{F}_{ext_B} =
+\begin{bmatrix}
+\boldsymbol{f}_{ext_B} \\
+\boldsymbol{\tau}_{ext_B}
+\end{bmatrix}
 ```
+
 where:
 - $\boldsymbol{v}^B_B$: base linear "classical" velocity expressed in base frame of reference ($B$) [0]
 - $\boldsymbol{\omega}^B_B$: base angular "classical" velocity expressed in base frame of reference ($B$) [0]
@@ -94,7 +109,8 @@ where:
 - $\boldsymbol{J}_{B, i}$: robots end-effector "spatial" jacobian matrix [0]
 - $\boldsymbol{f}_{ext}$: external force acting on robot end-effectors
 - $\boldsymbol{\tau}_{ext}$: external torque acting on robot end-effectors
-- $\boldsymbol{F}_{ext_i}$: external "spatial" force acting on robot end-effectors [0]
+- $\boldsymbol{F}_{ext_i}$: external "spatial" force acting on robot end-effectors expressed in inertial frame of reference [0]
+- $\boldsymbol{F}_{ext_B}$: external disturbance "spatial" force acting on robot base, expressed in base frame of reference [0]
 - $\boldsymbol{M}_B$: $6 \times 6$ "spatial" inertia matrix called "Locked Spatial Inertia Matrix" [0]
 - $\boldsymbol{aba}_{B}(...)$: equation for solving "spatial" base acceleration ($v$ is linear and $\omega$ is angular part of equation) [0]
 
