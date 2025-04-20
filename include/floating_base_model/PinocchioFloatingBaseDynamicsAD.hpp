@@ -25,8 +25,10 @@ namespace floating_base_model
    * @remark: The base classical linear and angular velocities are expressed in base frame of reference,
    * where position and orientation are expressed with respect to the world inertial frame
    *
-   * Input: u = [ contact_forces, contact_wrenches, joint_velocities ]'
+   * Input disturbanceurbance: disturbance = [ wrench acting on floating base (6x1) ]
    * @remark: Contact forces and wrenches are expressed with respect to the inertial frame.
+   * @remark: Wrench acting on floating base is applied to center of base frame, 
+   * expressed in base frame
   */
   class PinocchioFloatingBaseDynamicsAD final 
   {
@@ -63,7 +65,8 @@ namespace floating_base_model
      */
     ocs2::vector_t getValue(ocs2::scalar_t time,
       const ocs2::vector_t& state,
-      const ocs2::vector_t& input) const;
+      const ocs2::vector_t& input,
+      Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const;
 
     /**
      * Computes first order approximation of the system flow map x_dot = f(x, u)
@@ -75,14 +78,16 @@ namespace floating_base_model
      */
     ocs2::VectorFunctionLinearApproximation getLinearApproximation(ocs2::scalar_t time,
       const ocs2::vector_t& state,
-      const ocs2::vector_t& input) const;
+      const ocs2::vector_t& input,
+      Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const;
 
    private:
 
    ocs2::ad_vector_t getValueCppAd(ocs2::PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
       const FloatingBaseModelPinocchioMappingCppAd& mapping,
       const ocs2::ad_vector_t& state,
-      const ocs2::ad_vector_t& input);
+      const ocs2::ad_vector_t& input,
+      const Eigen::Matrix<ocs2::ad_scalar_t, 6, 1>& disturbance);
 
     std::unique_ptr<ocs2::CppAdInterface> systemFlowMapCppAdInterfacePtr_;
   };

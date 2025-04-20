@@ -15,7 +15,8 @@ namespace floating_base_model
     bool recompileLibraries,
     bool verbose) 
   {
-      auto systemFlowMapFunc = [&](const ocs2::ad_vector_t& x, ocs2::ad_vector_t& y) {
+    auto systemFlowMapFunc = [&](const ocs2::ad_vector_t& x, Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> params, ocs2::ad_vector_t& y) 
+    {
       // initialize CppAD interface
       auto pinocchioInterfaceCppAd = pinocchioInterface.toCppAd();
   
@@ -25,11 +26,12 @@ namespace floating_base_model
   
       ocs2::ad_vector_t state = x.head(info.stateDim);
       ocs2::ad_vector_t input = x.tail(info.inputDim);
-      y = getValueCppAd(pinocchioInterfaceCppAd, mappingCppAd, state, input);
+      Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> disturbance = params;
+      y = getValueCppAd(pinocchioInterfaceCppAd, mappingCppAd, state, input, disturbance);
     };
   
     systemFlowMapCppAdInterfacePtr_.reset(
-        new ocs2::CppAdInterface(systemFlowMapFunc, info.stateDim + info.inputDim, modelName + "_systemFlowMap", modelFolder));
+        new ocs2::CppAdInterface(systemFlowMapFunc, info.stateDim + info.inputDim, 6, modelName + "_systemFlowMap", modelFolder));
   
     if (recompileLibraries) {
       systemFlowMapCppAdInterfacePtr_->createModels(ocs2::CppAdInterface::ApproximationOrder::First, verbose);
@@ -51,7 +53,8 @@ namespace floating_base_model
     ocs2::PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
     const FloatingBaseModelPinocchioMappingCppAd& mappingCppAd,
     const ocs2::ad_vector_t& state,
-    const ocs2::ad_vector_t& input) 
+    const ocs2::ad_vector_t& input,
+    const Eigen::Matrix<ocs2::ad_scalar_t, 6, 1>& disturbance) 
   {
     const auto& info = mappingCppAd.getFloatingBaseModelInfo();
     assert(info.stateDim == state.rows());
@@ -82,7 +85,7 @@ namespace floating_base_model
     pinocchio::container::aligned_vector<Force> fext(model.njoints, force);
 
     model_helper_functions::computeForceVector(pinocchioInterfaceCppAd, info, input, fext);
-    const auto tau  = model_helper_functions::computeFloatingBaseGeneralizedTorques(pinocchioInterfaceCppAd, q, v, fext);
+    const Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> tau = model_helper_functions::computeFloatingBaseGeneralizedTorques(pinocchioInterfaceCppAd, q, v, fext) + disturbance;
     
     auto bodyVelocityDerivative = model_helper_functions::computeBaseBodyAcceleration(Mb, tau);
 
@@ -99,10 +102,11 @@ namespace floating_base_model
   /******************************************************************************************************/
   ocs2::vector_t PinocchioFloatingBaseDynamicsAD::getValue(ocs2::scalar_t time,
     const ocs2::vector_t& state,
-    const ocs2::vector_t& input) const 
+    const ocs2::vector_t& input,
+    Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const 
   {
     const ocs2::vector_t stateInput = (ocs2::vector_t(state.rows() + input.rows()) << state, input).finished();
-    return systemFlowMapCppAdInterfacePtr_->getFunctionValue(stateInput);
+    return systemFlowMapCppAdInterfacePtr_->getFunctionValue(stateInput, disturbance);
   }
   
   /******************************************************************************************************/
@@ -111,16 +115,17 @@ namespace floating_base_model
   ocs2::VectorFunctionLinearApproximation PinocchioFloatingBaseDynamicsAD::getLinearApproximation(
     ocs2::scalar_t time,
     const ocs2::vector_t& state,
-    const ocs2::vector_t& input) const 
+    const ocs2::vector_t& input,
+    Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const 
   {
     const ocs2::vector_t stateInput = (ocs2::vector_t(state.rows() + input.rows()) << state, input).finished();
     ocs2::VectorFunctionLinearApproximation approx;
-    approx.f = systemFlowMapCppAdInterfacePtr_->getFunctionValue(stateInput);
-    const ocs2::matrix_t dynamicsJacobian = systemFlowMapCppAdInterfacePtr_->getJacobian(stateInput);
+    approx.f = systemFlowMapCppAdInterfacePtr_->getFunctionValue(stateInput, disturbance);
+    const ocs2::matrix_t dynamicsJacobian = systemFlowMapCppAdInterfacePtr_->getJacobian(stateInput, disturbance);
     approx.dfdx = dynamicsJacobian.leftCols(state.rows());
-    approx.dfdu = dynamicsJacobian.rightCols(input.rows());
+    approx.dfdu = dynamicsJacobian.middleCols(state.rows(), input.rows());
     return approx;
   }
   
-  }  // namespace ocs2
+  }  // namespace floatin_base_model
   
