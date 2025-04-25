@@ -52,15 +52,15 @@ Equations of dynamics (System Flow Map)
 \frac{d\boldsymbol{q}_E}{dt} \\
 \frac{d\boldsymbol{q}_j}{dt} 
 \end{bmatrix} = \begin{bmatrix}
-\boldsymbol{aba}_{B_v}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
-\boldsymbol{aba}_{B_w}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) \\
+\boldsymbol{FD}_{B_v}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) +  \boldsymbol{w}^B_B \times \boldsymbol{v}^B_B \\
+\boldsymbol{FD}_{B_w}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) \\
 \boldsymbol{R}^0_B(\boldsymbol{q}_E)\boldsymbol{v}^B_B \\
 \boldsymbol{E}(\boldsymbol{q}_E)\boldsymbol{w}^B_B \\
 \dot{\boldsymbol{q}}_j
 \end{bmatrix}
 ```
 ```math
-\boldsymbol{aba}_{B}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) =
+\boldsymbol{FD}_{B}(\boldsymbol{q}, \boldsymbol{v}, \boldsymbol{f}_{ext}, \boldsymbol{\tau}_{ext}, \boldsymbol{d}) =
 \boldsymbol{M}^{-1}_B \big(-\boldsymbol{C}(\boldsymbol{q}, \boldsymbol{v}) \boldsymbol{v} - \boldsymbol{G}(\boldsymbol{q}) + \sum_{i \in C} \boldsymbol{J}^T_{B, i}\boldsymbol{F}_{ext_i} + \boldsymbol{F}_{ext_B} \big)
 ```
 ```math
@@ -112,7 +112,7 @@ where:
 - $\boldsymbol{F}_{ext_i}$: external "spatial" force acting on robot end-effectors expressed in inertial frame of reference [0]
 - $\boldsymbol{F}_{ext_B}$: external disturbance "spatial" force acting on robot base, expressed in base frame of reference [0]
 - $\boldsymbol{M}_B$: $6 \times 6$ "spatial" inertia matrix called "Locked Spatial Inertia Matrix" [0]
-- $\boldsymbol{aba}_{B}(...)$: equation for solving "spatial" base acceleration ($v$ is linear and $\omega$ is angular part of equation) [0]
+- $\boldsymbol{FD}_{B}(...)$: forward dynamics equation for solving "spatial" base acceleration ($v$ is linear and $\omega$ is angular part of equation) [0]
 
 ## ROS 2 versions
 - All 
