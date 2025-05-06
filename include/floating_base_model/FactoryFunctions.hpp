@@ -26,13 +26,13 @@ namespace floating_base_model {
     const std::string& baseLinkName);
 
   /**
-   * Create a scalar-typed CentroidalModelInfo.
+   * Create a scalar-typed FloatingBaseModelInfo.
    * @param [in] interface: Pinocchio interface
    * @param [in] type: Type of template model (SRBD or FRBD)
    * @param [in] nominalJointAngles: nominal joint angles used in the SRBD model.
    * @param [in] threeDofContactNames: Names of end-effectors with 3 DoF contacts (force)
    * @param [in] sixDofContactNames: Names of end-effectors with 6 DoF contacts (force + torque)
-   * @return CentroidalModelInfo
+   * @return FloatingBaseModelInfo
    */
   FloatingBaseModelInfo createFloatingBaseModelInfo(const ocs2::PinocchioInterface& interface,
     const std::vector<std::string>& threeDofContactNames,
