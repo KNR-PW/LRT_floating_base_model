@@ -98,12 +98,12 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
 
     computeForceVector(interface, info, input, fext);
 
-    const auto tauStatic = pinocchio::computeStaticTorque(model, data, q, fext).block<6,1>(0,0) - pinocchio::computeGeneralizedGravity(model, data, q).block<6,1>(0,0);
+    const auto tauStatic = pinocchio::computeStaticTorque(model, data, q, fext) - pinocchio::computeGeneralizedGravity(model, data, q);
 
     pinocchio::updateFramePlacements(model, data);
     pinocchio::computeJointJacobians(model, data);
 
-    Eigen::Vector<double, 6>tauStaticTrue = Eigen::Vector<double, 6>::Zero();
+    Eigen::Vector<double, Eigen::Dynamic> tauStaticTrue = Eigen::Vector<double, Eigen::Dynamic>::Zero(model.nv);
 
     for (size_t i = 0; i < info.numThreeDofContacts; i++) 
     {
@@ -112,7 +112,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
       pinocchio::Data::Matrix6x J(6, model.nv);
       J.setZero();
       pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
-      tauStaticTrue += -J.transpose().block<6,3>(0,0) * forceWorldFrame;
+      tauStaticTrue += -J.transpose().block(0, 0, model.nv, 3) * forceWorldFrame;
     }
 
     for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) 
@@ -122,16 +122,23 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
       pinocchio::Data::Matrix6x J(6, model.nv);
       J.setZero();
       pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
-      tauStaticTrue += -J.transpose().block<6,6>(0,0) * wrenchWorldFrame;
+      tauStaticTrue += -J.transpose() * wrenchWorldFrame;
     }
 
     EXPECT_TRUE(tauStatic.isApprox(tauStaticTrue, tolerance));
 
     ocs2::vector_t v = ocs2::vector_t::Random(model.nv);
 
-    const auto tauDynamic = computeFloatingBaseGeneralizedTorques(interface, q, v, fext);
-    const auto tauDynamicTrue = pinocchio::nonLinearEffects(model, data, q, v).block<6,1>(0,0) + tauStaticTrue;
+    const auto tauDynamicBase = computeFloatingBaseGeneralizedTorques(interface, q, v, fext);
+    const auto tauDynamicBaseTrue = pinocchio::nonLinearEffects(model, data, q, v).block<6, 1>(0, 0) + tauStaticTrue.block<6, 1>(0, 0);
 
-    EXPECT_TRUE(tauDynamic.isApprox(tauDynamicTrue, tolerance));
+    EXPECT_TRUE(tauDynamicBase.isApprox(tauDynamicBaseTrue, tolerance));
+
+    const auto tauDynamicJoints = computeActuatedJointGeneralizedTorques(interface, info, q, v, fext);
+    const auto tauDynamicJointsTrue = pinocchio::nonLinearEffects(model, data, q, v).block(6, 0, info.actuatedDofNum, 1) + tauStaticTrue.block(6, 0, info.actuatedDofNum, 1);
+
+    EXPECT_TRUE(tauDynamicJoints.isApprox(tauDynamicJointsTrue, tolerance));
+
+
   }
 }
