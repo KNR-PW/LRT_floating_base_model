@@ -29,10 +29,11 @@ namespace floating_base_model
      * Compute vector of pinocchio forces (used in rigid body algorithms)
      *
      * @param [in] interface: pinocchio interface
+     * @param [in] info: floating base model info
      * @param [in] input: system input vector
      * @return fext: vector of pinocchio forces (ForceTpl<SCALAR_T, 0>)
      * 
-     * @remark: This function require:
+     * @remark: This function require (before using call):
      * pinocchio::forwardKinematics(model, data, q)
      * pinocchio::updateFramePlacements(model, data)
      * 
@@ -45,7 +46,7 @@ namespace floating_base_model
       pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>>& fext);
 
     /**
-     * Compute generalized torques due to:
+     * Compute floating base generalized torques due to:
      * - Gravity: G(q)
      * - Coriolis Effects: C(q, v) * v
      * - External Forces: -J^t * f_ext
@@ -54,7 +55,7 @@ namespace floating_base_model
      * @param [in] q: pinocchio joint configuration
      * @param [in] v: pinocchio joint velocity
      * @param [in] fext: external forces expressed in the local frame of the joints (dim model.njoints)
-     * @return tau: generalized torques of floating base model
+     * @return tau: generalized torques of floating base (6x1 wrench)
      * 
      * @remark: This function also internally calls:
      * pinocchio::rnea(model, data, q, v, 0, fext)
@@ -65,6 +66,31 @@ namespace floating_base_model
       const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
       const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v,
       const pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>>& fext);
+    
+      /**
+     * Compute actuated joint torques due to:
+     * - Gravity: G(q)
+     * - Coriolis Effects: C(q, v) * v
+     * - External Forces: -J^t * f_ext
+     *
+     * @param [in] interface: pinocchio interface
+     * @param [in] info: floating base model info
+     * @param [in] q: pinocchio joint configuration
+     * @param [in] v: pinocchio joint velocity
+     * @param [in] fext: external forces expressed in the local frame of the joints (dim model.njoints)
+     * @return tau: generalized torques of actuated joints
+     * 
+     * @remark: This function also internally calls:
+     * pinocchio::rnea(model, data, q, v, 0, fext)
+     */
+    template <typename SCALAR_T>
+    Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1> computeActuatedJointGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
+      const FloatingBaseModelInfoTpl<SCALAR_T>& info,
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>>& fext);
+    
 
     /**
      * Compute locked 6D rigid body inertia of the multi-body system Mb.
@@ -138,6 +164,20 @@ namespace floating_base_model
 
     extern template Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> computeFloatingBaseGeneralizedTorques(
       ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>>& fext);
+    
+    extern template Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1> computeActuatedJointGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface,
+      const FloatingBaseModelInfoTpl<ocs2::scalar_t>& info,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& q,
+      const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& v,
+      const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::scalar_t, 0>>& fext);
+    
+    extern template Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1> computeActuatedJointGeneralizedTorques(
+      ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
+      const FloatingBaseModelInfoTpl<ocs2::ad_scalar_t>& info,
       const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& q,
       const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& v,
       const pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::ad_scalar_t, 0>>& fext);
