@@ -18,6 +18,8 @@ namespace floating_base_model
       const auto& model = interface.getModel();
       auto& data = interface.getData();
 
+      assert(fext.size() == model.njoints);
+
       using Force = pinocchio::ForceTpl<SCALAR_T, 0>;
       Force force;
       force.linear() = Eigen::Vector<SCALAR_T, 3>::Zero();
