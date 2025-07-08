@@ -65,7 +65,7 @@ namespace floating_base_model
     pinocchio::forwardKinematics(model, data, q);
 
     const auto Mb = model_helper_functions::computeFloatingBaseLockedInertia(interface);
-    model_helper_functions::computeForceVector(interface, info, input, fext_);
+    model_helper_functions::computeForceVectors(interface, info, input, fext_);
 
     const Eigen::Matrix<ocs2::scalar_t, 6, 1> tau = model_helper_functions::computeFloatingBaseGeneralizedTorques(interface, q, v, fext_) + disturbance;
     

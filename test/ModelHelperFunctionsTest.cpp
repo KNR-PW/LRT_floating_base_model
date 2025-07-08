@@ -96,7 +96,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
 
     const auto input = getAccessTestRobotInput();
 
-    computeForceVector(interface, info, input, fext);
+    computeForceVectors(interface, info, input, fext);
 
     const auto tauStatic = pinocchio::computeStaticTorque(model, data, q, fext) - pinocchio::computeGeneralizedGravity(model, data, q);
 

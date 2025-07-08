@@ -84,7 +84,7 @@ namespace floating_base_model
     force.angular() = Eigen::Vector<ocs2::ad_scalar_t, 3>::Zero();
     pinocchio::container::aligned_vector<Force> fext(model.njoints, force);
 
-    model_helper_functions::computeForceVector(pinocchioInterfaceCppAd, info, input, fext);
+    model_helper_functions::computeForceVectors(pinocchioInterfaceCppAd, info, input, fext);
     const Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> tau = model_helper_functions::computeFloatingBaseGeneralizedTorques(pinocchioInterfaceCppAd, q, v, fext) + disturbance;
     
     auto bodyVelocityDerivative = model_helper_functions::computeBaseBodyAcceleration(Mb, tau);
