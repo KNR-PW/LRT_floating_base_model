@@ -9,7 +9,7 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename SCALAR_T>
-    void computeForceVectors(
+    void computeSpatialForces(
       const ocs2::PinocchioInterfaceTpl<SCALAR_T>& interface,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info,
       const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& input,
@@ -151,13 +151,13 @@ namespace floating_base_model
     /******************************************************************************************************/
     // Explicit template instantiation
 
-    template void computeForceVectors(
+    template void computeSpatialForces(
       const ocs2::PinocchioInterfaceTpl<ocs2::scalar_t>& interface,
       const FloatingBaseModelInfoTpl<ocs2::scalar_t>& info,
       const Eigen::Matrix<ocs2::scalar_t, Eigen::Dynamic, 1>& input,
       pinocchio::container::aligned_vector<pinocchio::ForceTpl<ocs2::scalar_t, 0>>& fext);
     
-    template void computeForceVectors(
+    template void computeSpatialForces(
       const ocs2::PinocchioInterfaceTpl<ocs2::ad_scalar_t>& interface,
       const FloatingBaseModelInfoTpl<ocs2::ad_scalar_t>& info,
       const Eigen::Matrix<ocs2::ad_scalar_t, Eigen::Dynamic, 1>& input,
