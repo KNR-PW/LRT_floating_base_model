@@ -147,6 +147,8 @@ rosdoc2 build --package-path src/floating_base_model
 ```bash
 firefox docs_output/floating_base_model/index.html
 ```
+## Repository maintainers
+- [Bartłomiej Krajewski](https://github.com/BartlomiejK2): main developer
 
 ## Contributing
 1. Change code.
