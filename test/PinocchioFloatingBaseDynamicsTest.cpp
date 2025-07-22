@@ -6,6 +6,7 @@
 #include <floating_base_model/PinocchioFloatingBaseDynamicsAD.hpp>
 
 #include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
 
 #include "include/definitions.h"
 
@@ -34,15 +35,43 @@ PinocchioFloatingBaseDynamicsAD dynamicsAD(interface, info, modelName, modelFold
 TEST(PinocchioFloatingBaseDynamicsTest, getValue)
 {
   dynamics.setPinocchioInterface(interface);
+  FloatingBaseModelPinocchioMapping mapping(info);
+  mapping.setPinocchioInterface(interface);
   for(size_t i = 0; i < numTests; ++i)
   {
     ocs2::vector_t state = ocs2::vector_t::Random(Meldog::STATE_DIM);
     ocs2::vector_t input = ocs2::vector_t::Random(Meldog::INPUT_DIM);
     Eigen::Matrix<ocs2::scalar_t, 6, 1> disturbance = Eigen::Matrix<ocs2::scalar_t, 6, 1>::Random();
 
+    const auto q = mapping.getPinocchioJointPosition(state);
+    const auto v = mapping.getPinocchioJointVelocity(state, input);
+    pinocchio::forwardKinematics(model, data, q);
+
+    using Force = pinocchio::ForceTpl<ocs2::scalar_t, 0>;
+    Force force;
+    force.linear() = Eigen::Vector<ocs2::scalar_t, 3>::Zero();
+    force.angular() = Eigen::Vector<ocs2::scalar_t, 3>::Zero();
+    pinocchio::container::aligned_vector<Force> fext(model.njoints, force);
+
+    model_helper_functions::computeSpatialForces(interface, info, input, fext);
+
+    Eigen::Matrix<ocs2::scalar_t, 6, 6> baseInertiaMatrix = pinocchio::crba(model, data, q).block<6, 6>(0, 0);
+    baseInertiaMatrix.triangularView<Eigen::StrictlyLower>() = baseInertiaMatrix.transpose().triangularView<Eigen::StrictlyLower>();
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseCoriollisVector = pinocchio::computeCoriolisMatrix(model, data, q, v).block(0, 0, 6, model.nv) * v;
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseGravityExternalForcesVector = pinocchio::computeStaticTorque(model, data, q, fext).block<6, 1>(0, 0);
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseTorque = baseCoriollisVector + baseGravityExternalForcesVector + disturbance;
+    
+    Eigen::Matrix<ocs2::scalar_t, 6, 1> baseAccelerationTrue = baseInertiaMatrix.ldlt().solve(baseTorque);
+    const Eigen::Matrix<ocs2::scalar_t, 3, 1> baseLinearVelocity = v.block<3, 1>(0, 0);
+    const Eigen::Matrix<ocs2::scalar_t, 3, 1> baseAngularVelocity = v.block<3, 1>(3, 0);
+    baseAccelerationTrue.block<3, 1>(0, 0) += baseAngularVelocity.cross(baseLinearVelocity);
+
     const auto value = dynamics.getValue(0, state, input, disturbance);
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseAcceleration = value.block<6, 1>(0, 0);
+
     const auto valueAD = dynamicsAD.getValue(0, state, input, disturbance);
 
+    EXPECT_TRUE(baseAccelerationTrue.isApprox(baseAcceleration, tolerance));
     EXPECT_TRUE(value.isApprox(valueAD, tolerance));
   }
 
