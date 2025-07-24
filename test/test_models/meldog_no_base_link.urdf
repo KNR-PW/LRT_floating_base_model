@@ -7,630 +7,6 @@
   <!-- Macro for defining a link, please ensure that 
     the visual and collision models coordinate 
     systems are placed in joints -->
-  <!-- inertial properties -->
-  <!-- inertial properties -->
-  <!-- inertial properties -->
-  <!-- inertial properties -->
-  <!-- If using gazebo link parameters -->
-  <gazebo reference="trunk_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LFH_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LFUL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LFLL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LFF_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RFH_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RFUL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RFLL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RFF_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LRH_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LRUL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LRLL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="LRF_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RRH_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RRUL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RRLL_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <gazebo reference="RRF_link">
-    <visual>
-      <material>
-        <diffuse>0 0 1 1 </diffuse>
-      </material>
-    </visual>
-    <mu1 value="0"/>
-    <mu2 value="0"/>
-    <kp value="0"/>
-    <kd value="0"/>
-    <maxVel value="0"/>
-    <dampingFactor value="0"/>
-  </gazebo>
-  <!-- if using gazebo joint parameters -->
-  <gazebo reference="LFT_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="LFH_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="LFK_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="RFT_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="RFH_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="RFK_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="LRT_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="LRH_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="LRK_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="RRT_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="RRH_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <gazebo reference="RRK_joint">
-    <implicitSpringDamper>0</implicitSpringDamper>
-    <springStiffness>0</springStiffness>
-    <springReference>0</springReference>
-    <stopErp>0</stopErp>
-    <stopCfm>0</stopCfm>
-  </gazebo>
-  <ros2_control name="IgnitionSystem" type="system">
-    <hardware>
-      <plugin>ign_ros2_control/IgnitionSystem</plugin>
-    </hardware>
-    <joint name="LFT_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-45</param>
-        <param name="max">45</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="LFH_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-120</param>
-        <param name="max">120</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="LFK_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-160</param>
-        <param name="max">160</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="RFT_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-45</param>
-        <param name="max">45</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="RFH_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-120</param>
-        <param name="max">120</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="RFK_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-160</param>
-        <param name="max">160</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="LRT_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-45</param>
-        <param name="max">45</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="LRH_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-120</param>
-        <param name="max">120</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="LRK_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-160</param>
-        <param name="max">160</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="RRT_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-45</param>
-        <param name="max">45</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="RRH_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-120</param>
-        <param name="max">120</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <joint name="RRK_joint">
-      <!-- co jesli joint continuous? -->
-      <command_interface name="position">
-        <param name="min">-160</param>
-        <param name="max">160</param>
-      </command_interface>
-      <command_interface name="velocity">
-        <param name="min">-18.906274745776084</param>
-        <param name="max">18.906274745776084</param>
-      </command_interface>
-      <command_interface name="effort">
-        <param name="min">-34.895</param>
-        <param name="max">34.895</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <state_interface name="effort"/>
-    </joint>
-    <!-- transmission -->
-    <!-- <xacro:simple_transmission joint="LFT" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="LFH" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="LFK" reduction="${actuator_reduction}" offset="0.0" />
-
-        <xacro:simple_transmission joint="RFT" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="RFH" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="RFK" reduction="${actuator_reduction}" offset="0.0" />
-
-        <xacro:simple_transmission joint="LRT" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="LRH" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="LRK" reduction="${actuator_reduction}" offset="0.0" />
-
-        <xacro:simple_transmission joint="RRT" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="RRH" reduction="${actuator_reduction}" offset="0.0" />
-        <xacro:simple_transmission joint="RRK" reduction="${actuator_reduction}" offset="0.0" /> -->
-    <transmission name="FourBarLinkageTransmission_LFH_LFK">
-      <plugin>transmission_interface/FourBarLinkageTransmission</plugin>
-      <!-- <actuator name="${first_joint_name}_actuator" role="actuator1">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator>
-            <actuator name="${second_joint_name}_actuator" role="actuator2">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator> -->
-      <joint name="LFH_joint" role="joint1">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-      <joint name="LFK_joint" role="joint2">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-    </transmission>
-    <transmission name="FourBarLinkageTransmission_RFH_RFK">
-      <plugin>transmission_interface/FourBarLinkageTransmission</plugin>
-      <!-- <actuator name="${first_joint_name}_actuator" role="actuator1">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator>
-            <actuator name="${second_joint_name}_actuator" role="actuator2">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator> -->
-      <joint name="RFH_joint" role="joint1">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-      <joint name="RFK_joint" role="joint2">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-    </transmission>
-    <transmission name="FourBarLinkageTransmission_LRH_LRK">
-      <plugin>transmission_interface/FourBarLinkageTransmission</plugin>
-      <!-- <actuator name="${first_joint_name}_actuator" role="actuator1">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator>
-            <actuator name="${second_joint_name}_actuator" role="actuator2">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator> -->
-      <joint name="LRH_joint" role="joint1">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-      <joint name="LRK_joint" role="joint2">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-    </transmission>
-    <transmission name="FourBarLinkageTransmission_RRH_RRK">
-      <plugin>transmission_interface/FourBarLinkageTransmission</plugin>
-      <!-- <actuator name="${first_joint_name}_actuator" role="actuator1">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator>
-            <actuator name="${second_joint_name}_actuator" role="actuator2">
-                <mechanical_reduction>${reduction}</mechanical_reduction>
-            </actuator> -->
-      <joint name="RRH_joint" role="joint1">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-      <joint name="RRK_joint" role="joint2">
-        <mechanical_reduction>1.0</mechanical_reduction>
-        <offset>0.0</offset>
-      </joint>
-    </transmission>
-  </ros2_control>
-  <gazebo>
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-      <!-- <robot_param>robot_description</robot_param>
-          <robot_param_node>robot_state_publisher</robot_param_node> -->
-      <parameters>/home/bartek/KNR/meldog-ros/install/meldog_description/share/meldog_description/controllers/joint_controller.yaml</parameters>
-      <!-- <hold_joints>true</hold_joints> -->
-    </plugin>
-  </gazebo>
   <!-- LINKS -->
   <link name="trunk_link">
     <inertial>
@@ -677,18 +53,6 @@
   </link>
   <!-- Left front leg links -->
   <link name="LFH_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/hip_test.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/hip_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="2.276"/>
       <origin rpy="0 0 0" xyz="0.126369 0.014728999999999999 0.00016"/>
@@ -696,18 +60,6 @@
     </inertial>
   </link>
   <link name="LFUL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/upper_limb_test.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/upper_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.474"/>
       <origin rpy="0 0 0" xyz="-0.001185 -0.004308 -0.09420300000000001"/>
@@ -715,18 +67,6 @@
     </inertial>
   </link>
   <link name="LFLL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/LL_vis_v2.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/lower_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.079"/>
       <origin rpy="0 0 0" xyz="0.0008010000000000001 0.0 -0.13983600000000002"/>
@@ -734,18 +74,6 @@
     </inertial>
   </link>
   <link name="LFF_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/foot_vis.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <sphere radius="0.035"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.037"/>
       <origin rpy="0 0 0" xyz="0.0 0.0 -0.008417"/>
@@ -754,18 +82,6 @@
   </link>
   <!-- Right front leg links -->
   <link name="RFH_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/front_right_hip.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/front_right_hip_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="2.276"/>
       <origin rpy="0 0 0" xyz="0.126369 -0.014728999999999999 0.00016"/>
@@ -773,18 +89,6 @@
     </inertial>
   </link>
   <link name="RFUL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/r_upper_limb_vis.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/upper_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.474"/>
       <origin rpy="0 0 0" xyz="-0.001185 0.004308 -0.09420300000000001"/>
@@ -792,18 +96,6 @@
     </inertial>
   </link>
   <link name="RFLL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/LL_vis_v2.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/lower_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.079"/>
       <origin rpy="0 0 0" xyz="0.0008010000000000001 0.0 -0.13983600000000002"/>
@@ -811,18 +103,6 @@
     </inertial>
   </link>
   <link name="RFF_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/foot_vis.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <sphere radius="0.035"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.037"/>
       <origin rpy="0 0 0" xyz="0.0 -0.0 -0.008417"/>
@@ -831,18 +111,6 @@
   </link>
   <!-- Left rear leg links -->
   <link name="LRH_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/rear_left_hip.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/rear_left_hip_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="2.276"/>
       <origin rpy="0 0 0" xyz="-0.126369 0.014728999999999999 0.00016"/>
@@ -850,18 +118,6 @@
     </inertial>
   </link>
   <link name="LRUL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/upper_limb_test.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/upper_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.474"/>
       <origin rpy="0 0 0" xyz="0.001185 -0.004308 -0.09420300000000001"/>
@@ -869,18 +125,6 @@
     </inertial>
   </link>
   <link name="LRLL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/LL_vis_v2.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/lower_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.079"/>
       <origin rpy="0 0 0" xyz="-0.0008010000000000001 0.0 -0.13983600000000002"/>
@@ -888,18 +132,6 @@
     </inertial>
   </link>
   <link name="LRF_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/foot_vis.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <sphere radius="0.035"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.037"/>
       <origin rpy="0 0 0" xyz="-0.0 0.0 -0.008417"/>
@@ -908,18 +140,6 @@
   </link>
   <!-- Right rear leg links -->
   <link name="RRH_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/rear_right_hip.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/rear_right_hip_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="2.276"/>
       <origin rpy="0 0 0" xyz="-0.126369 -0.014728999999999999 0.00016"/>
@@ -927,18 +147,6 @@
     </inertial>
   </link>
   <link name="RRUL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/r_upper_limb_vis.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/upper_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.474"/>
       <origin rpy="0 0 0" xyz="0.001185 0.004308 -0.09420300000000001"/>
@@ -946,18 +154,6 @@
     </inertial>
   </link>
   <link name="RRLL_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/LL_vis_v2.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/collision/lower_limb_collision.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.079"/>
       <origin rpy="0 0 0" xyz="-0.0008010000000000001 0.0 -0.13983600000000002"/>
@@ -965,18 +161,6 @@
     </inertial>
   </link>
   <link name="RRF_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://meldog_description/meshes/visual/foot_vis.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-    <collision>
-      <geometry>
-        <sphere radius="0.035"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </collision>
     <inertial>
       <mass value="0.037"/>
       <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.008417"/>
