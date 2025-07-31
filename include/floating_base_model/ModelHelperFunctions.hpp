@@ -86,7 +86,7 @@ namespace floating_base_model
       const Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>& v,
       const pinocchio::container::aligned_vector<pinocchio::ForceTpl<SCALAR_T, 0>>& fext);
     
-      /**
+    /**
      * Compute actuated joint torques due to:
      * - Gravity: G(q)
      * - Coriolis Effects: C(q, v) * v
