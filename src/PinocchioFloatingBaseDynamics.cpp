@@ -62,8 +62,9 @@ namespace floating_base_model
 
     const auto q = mapping_.getPinocchioJointPosition(state);
     const auto v = mapping_.getPinocchioJointVelocity(state, input);
+    
     pinocchio::forwardKinematics(model, data, q);
-
+    
     const auto Mb = model_helper_functions::computeFloatingBaseLockedInertia(interface);
     model_helper_functions::computeSpatialForces(interface, info, input, fext_);
 

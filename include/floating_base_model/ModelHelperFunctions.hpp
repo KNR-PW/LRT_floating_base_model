@@ -54,8 +54,6 @@ namespace floating_base_model
      * 
      * @remark: This function require (before using call):
      * pinocchio::forwardKinematics(model, data, q)
-     * pinocchio::updateFramePlacements(model, data)
-     * 
      */
     template <typename SCALAR_T>
     void computeSpatialForces(
@@ -122,7 +120,6 @@ namespace floating_base_model
      * 
      * @remark: This function require:
      * pinocchio::forwardKinematics(model, data, q)
-     * pinocchio::updateFramePlacements(model, data)
      */
     template <typename SCALAR_T>
     Eigen::Matrix<SCALAR_T, 6, 6> computeFloatingBaseLockedInertia(
