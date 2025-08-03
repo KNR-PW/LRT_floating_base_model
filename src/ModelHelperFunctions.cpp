@@ -25,7 +25,8 @@ namespace floating_base_model
       force.linear() = Eigen::Vector<SCALAR_T, 3>::Zero();
       force.angular() = Eigen::Vector<SCALAR_T, 3>::Zero();
 
-      for (size_t i = 0; i < info.numThreeDofContacts; i++) {
+      for (size_t i = 0; i < info.numThreeDofContacts; i++) 
+      {
         const auto forceWorldFrame = access_helper_functions::getContactForces(input, i, info);
         size_t parentJointIndex = info.endEffectorJointIndices[i];
         size_t contactFrameIndex = info.endEffectorFrameIndices[i];
@@ -36,7 +37,8 @@ namespace floating_base_model
         fext[parentJointIndex] = force;
       }  
     
-      for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) {
+      for (size_t i = info.numThreeDofContacts; i < info.numThreeDofContacts + info.numSixDofContacts; i++) 
+      {
         const auto wrenchWorldFrame = access_helper_functions::getContactWrenches(input, i, info);
         size_t parentJointIndex = info.endEffectorJointIndices[i];
         size_t contactFrameIndex = info.endEffectorFrameIndices[i];
