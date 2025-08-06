@@ -18,8 +18,14 @@ TEST(ModelHelperFunctions, FloatingBaseLockedInertia)
 {
   ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
-  const auto& model = interface.getModel();
-  auto& data = interface.getData();
+  
+  // Interface model and data (references)
+  const pinocchio::Model& model = interface.getModel();
+  pinocchio::Data& data = interface.getData();
+
+  // New model and data (copies)
+  const pinocchio::Model modelTrue = interface.getModel();
+  pinocchio::Data dataTrue = interface.getData();
 
   for(size_t i = 0; i < numTests; ++i)
   {
@@ -29,9 +35,11 @@ TEST(ModelHelperFunctions, FloatingBaseLockedInertia)
     q.block<4,1>(3, 0) = quaterion.coeffs();
 
     pinocchio::forwardKinematics(model, data, q);
-    pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
 
-    Eigen::Matrix<double, 6, 6> MbTrue = data.M.block<6,6>(0, 0);
+    pinocchio::crba(modelTrue, dataTrue, q, pinocchio::Convention::LOCAL);
+    dataTrue.M.triangularView<Eigen::StrictlyLower>() = dataTrue.M.transpose().triangularView<Eigen::StrictlyLower>();
+
+    Eigen::Matrix<double, 6, 6> MbTrue = dataTrue.M.block<6,6>(0, 0);
 
     Eigen::Matrix<double, 6, 6> Mb = computeFloatingBaseLockedInertia(interface);
 
@@ -48,8 +56,14 @@ TEST(ModelHelperFunctions, BaseBodyAcceleration)
 {
   ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
-  const auto& model = interface.getModel();
-  auto& data = interface.getData();
+  
+  // Interface model and data (references)
+  const pinocchio::Model& model = interface.getModel();
+  pinocchio::Data& data = interface.getData();
+
+  // New model and data (copies)
+  const pinocchio::Model modelTrue = interface.getModel();
+  pinocchio::Data dataTrue = interface.getData();
 
   for(size_t i = 0; i < numTests; ++i)
   {
@@ -60,8 +74,10 @@ TEST(ModelHelperFunctions, BaseBodyAcceleration)
 
     pinocchio::forwardKinematics(model, data, q);
 
-    pinocchio::crba(model, data, q, pinocchio::Convention::LOCAL);
-    Eigen::Matrix<double, 6, 6> MbTrue = data.M.block<6,6>(0, 0);
+    pinocchio::crba(modelTrue, dataTrue, q, pinocchio::Convention::LOCAL);
+    dataTrue.M.triangularView<Eigen::StrictlyLower>() = dataTrue.M.transpose().triangularView<Eigen::StrictlyLower>();
+
+    Eigen::Matrix<double, 6, 6> MbTrue = dataTrue.M.block<6,6>(0, 0);
 
     Eigen::Matrix<double, 6, 6> Mb = computeFloatingBaseLockedInertia(interface);
 
@@ -79,8 +95,14 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
 {
   ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
-  const auto& model = interface.getModel();
-  auto& data = interface.getData();
+  
+  // Interface model and data (references)
+  const pinocchio::Model& model = interface.getModel();
+  pinocchio::Data& data = interface.getData();
+
+  // New model and data (copies)
+  const pinocchio::Model modelTrue = interface.getModel();
+  pinocchio::Data dataTrue = interface.getData();
 
   for(size_t i = 0; i < numTests; ++i)
   {
@@ -90,6 +112,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
     q.block<4,1>(3, 0) = quaterion.coeffs();
 
     pinocchio::forwardKinematics(model, data, q);
+    pinocchio::forwardKinematics(modelTrue, dataTrue, q);
 
     pinocchio::Force zero_force(Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
     pinocchio::container::aligned_vector<pinocchio::Force> fext(model.njoints, zero_force);
@@ -100,8 +123,8 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
 
     const auto tauStatic = pinocchio::computeStaticTorque(model, data, q, fext) - pinocchio::computeGeneralizedGravity(model, data, q);
 
-    pinocchio::updateFramePlacements(model, data);
-    pinocchio::computeJointJacobians(model, data);
+    pinocchio::updateFramePlacements(modelTrue, dataTrue);
+    pinocchio::computeJointJacobians(modelTrue, dataTrue);
 
     Eigen::Vector<double, Eigen::Dynamic> tauStaticTrue = Eigen::Vector<double, Eigen::Dynamic>::Zero(model.nv);
 
@@ -111,7 +134,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
       size_t contactFrameIndex = info.endEffectorFrameIndices[i];
       pinocchio::Data::Matrix6x J(6, model.nv);
       J.setZero();
-      pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
+      pinocchio::computeFrameJacobian(modelTrue, dataTrue, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
       tauStaticTrue += -J.transpose().block(0, 0, model.nv, 3) * forceWorldFrame;
     }
 
@@ -121,7 +144,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
       size_t contactFrameIndex = info.endEffectorFrameIndices[i];
       pinocchio::Data::Matrix6x J(6, model.nv);
       J.setZero();
-      pinocchio::computeFrameJacobian(model, data, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
+      pinocchio::computeFrameJacobian(modelTrue, dataTrue, q, contactFrameIndex, pinocchio::LOCAL_WORLD_ALIGNED, J);
       tauStaticTrue += -J.transpose() * wrenchWorldFrame;
     }
 
@@ -130,12 +153,12 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
     ocs2::vector_t v = ocs2::vector_t::Random(model.nv);
 
     const auto tauDynamicBase = computeFloatingBaseGeneralizedTorques(interface, q, v, fext);
-    const auto tauDynamicBaseTrue = pinocchio::nonLinearEffects(model, data, q, v).block<6, 1>(0, 0) + tauStaticTrue.block<6, 1>(0, 0);
+    const auto tauDynamicBaseTrue = pinocchio::nonLinearEffects(modelTrue, dataTrue, q, v).block<6, 1>(0, 0) + tauStaticTrue.block<6, 1>(0, 0);
 
     EXPECT_TRUE(tauDynamicBase.isApprox(tauDynamicBaseTrue, tolerance));
 
     const auto tauDynamicJoints = computeActuatedJointGeneralizedTorques(interface, info, q, v, fext);
-    const auto tauDynamicJointsTrue = pinocchio::nonLinearEffects(model, data, q, v).block(6, 0, info.actuatedDofNum, 1) + tauStaticTrue.block(6, 0, info.actuatedDofNum, 1);
+    const auto tauDynamicJointsTrue = pinocchio::nonLinearEffects(modelTrue, dataTrue, q, v).block(6, 0, info.actuatedDofNum, 1) + tauStaticTrue.block(6, 0, info.actuatedDofNum, 1);
 
     EXPECT_TRUE(tauDynamicJoints.isApprox(tauDynamicJointsTrue, tolerance));
 

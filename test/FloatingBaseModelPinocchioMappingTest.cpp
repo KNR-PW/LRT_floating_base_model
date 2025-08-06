@@ -141,8 +141,8 @@ TEST(FloatingBaseModelPinocchioMapping, Getters)
 {
   ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
-  const auto& model = interface.getModel();
-  auto& data = interface.getData();
+  const pinocchio::Model model = interface.getModel();
+  pinocchio::Data data = interface.getData();
 
   FloatingBaseModelPinocchioMapping mapping(info);
   mapping.setPinocchioInterface(interface);
@@ -180,8 +180,14 @@ TEST(FloatingBaseModelPinocchioMapping, ocs2Jacobian)
 {
   ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
-  const auto& model = interface.getModel();
-  auto& data = interface.getData();
+  
+  // Interface model and data (references)
+  const pinocchio::Model& model = interface.getModel();
+  pinocchio::Data& data = interface.getData();
+
+  // New model and data (copies)
+  const pinocchio::Model modelTrue = interface.getModel();
+  pinocchio::Data dataTrue = interface.getData();
 
   FloatingBaseModelPinocchioMapping mapping(info);
   mapping.setPinocchioInterface(interface);
@@ -213,12 +219,12 @@ TEST(FloatingBaseModelPinocchioMapping, ocs2Jacobian)
     Eigen::MatrixXd v_partial_dv(6, model.nv);
     v_partial_dv.setZero();
     
-    pinocchio::forwardKinematics(model, data, q, v);
-    pinocchio::computeForwardKinematicsDerivatives(model, data, q, v, a);
+    pinocchio::forwardKinematics(modelTrue, dataTrue, q, v);
+    pinocchio::computeForwardKinematicsDerivatives(modelTrue, dataTrue, q, v, a);
     
-    pinocchio::getFrameVelocityDerivatives(model, data, frameIndex, pinocchio::LOCAL, v_partial_dq, v_partial_dv);
+    pinocchio::getFrameVelocityDerivatives(modelTrue, dataTrue, frameIndex, pinocchio::LOCAL, v_partial_dq, v_partial_dv);
     
-    ocs2::vector_t frameVelocity = pinocchio::getFrameVelocity(model, data, frameIndex, pinocchio::LOCAL).toVector();
+    ocs2::vector_t frameVelocity = pinocchio::getFrameVelocity(modelTrue, dataTrue, frameIndex, pinocchio::LOCAL).toVector();
     ocs2::vector_t frameVelocityAD = frameVelocityGenAD.getValue(0, state, input);
     
     EXPECT_TRUE(frameVelocity.isApprox(frameVelocityAD, tolerance));

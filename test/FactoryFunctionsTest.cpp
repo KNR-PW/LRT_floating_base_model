@@ -26,11 +26,12 @@ TEST(FactoryFunctions, FloatingBaseModelInfo)
   ASSERT_TRUE(info.numThreeDofContacts == Meldog::NUM_THREE_DOF_CONTACTS);                
   ASSERT_TRUE(info.numSixDofContacts == Meldog::NUM_SIX_DOF_CONTACTS);               
   ASSERT_TRUE(info.generalizedCoordinatesNum == Meldog::GENERALIZED_COORDINATES_NUM);             
-  ASSERT_TRUE(info.actuatedDofNum == Meldog::ACTUATED_DOF_NUM);                
+  ASSERT_TRUE(info.actuatedDofNum == Meldog::ACTUATED_DOF_NUM);
+  ASSERT_TRUE(info.actuatedDofNum == (Meldog::STATE_DIM - 12));              
   ASSERT_TRUE(info.stateDim == Meldog::STATE_DIM);
   ASSERT_TRUE(info.inputDim == Meldog::INPUT_DIM);
   
-  const auto& model = interface.getModel();
+  const pinocchio::Model model = interface.getModel();
 
   std::vector<size_t> meldogContactJointIndices;
 

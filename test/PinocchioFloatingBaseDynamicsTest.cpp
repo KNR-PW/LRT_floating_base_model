@@ -22,8 +22,14 @@ static constexpr size_t numTests = 20;
 
 ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
 auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
-const auto& model = interface.getModel();
-auto& data = interface.getData();
+
+// Interface model and data (references)
+const pinocchio::Model& model = interface.getModel();
+pinocchio::Data& data = interface.getData();
+
+// New model and data (copies)
+const pinocchio::Model modelTrue = interface.getModel();
+pinocchio::Data dataTrue = interface.getData();
 
 PinocchioFloatingBaseDynamics dynamics(info);
 
@@ -45,7 +51,9 @@ TEST(PinocchioFloatingBaseDynamicsTest, getValue)
 
     const auto q = mapping.getPinocchioJointPosition(state);
     const auto v = mapping.getPinocchioJointVelocity(state, input);
+
     pinocchio::forwardKinematics(model, data, q);
+    pinocchio::forwardKinematics(modelTrue, dataTrue, q);
 
     using Force = pinocchio::ForceTpl<ocs2::scalar_t, 0>;
     Force force;
@@ -55,10 +63,10 @@ TEST(PinocchioFloatingBaseDynamicsTest, getValue)
 
     model_helper_functions::computeSpatialForces(interface, info, input, fext);
 
-    Eigen::Matrix<ocs2::scalar_t, 6, 6> baseInertiaMatrix = pinocchio::crba(model, data, q).block<6, 6>(0, 0);
+    Eigen::Matrix<ocs2::scalar_t, 6, 6> baseInertiaMatrix = pinocchio::crba(modelTrue, dataTrue, q).block<6, 6>(0, 0);
     baseInertiaMatrix.triangularView<Eigen::StrictlyLower>() = baseInertiaMatrix.transpose().triangularView<Eigen::StrictlyLower>();
-    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseCoriollisVector = pinocchio::computeCoriolisMatrix(model, data, q, v).block(0, 0, 6, model.nv) * v;
-    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseGravityExternalForcesVector = pinocchio::computeStaticTorque(model, data, q, fext).block<6, 1>(0, 0);
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseCoriollisVector = pinocchio::computeCoriolisMatrix(modelTrue, dataTrue, q, v).block(0, 0, 6, model.nv) * v;
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseGravityExternalForcesVector = pinocchio::computeStaticTorque(modelTrue, dataTrue, q, fext).block<6, 1>(0, 0);
     const Eigen::Matrix<ocs2::scalar_t, 6, 1> baseTorque = baseCoriollisVector + baseGravityExternalForcesVector + disturbance;
     
     Eigen::Matrix<ocs2::scalar_t, 6, 1> baseAccelerationTrue = baseInertiaMatrix.ldlt().solve(baseTorque);
