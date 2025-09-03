@@ -267,74 +267,74 @@ namespace floating_base_model
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    Eigen::Block<Derived, -1, 1> getGeneralizedCoordinates(Eigen::MatrixBase<Derived>& state,
+    Eigen::Block<Derived, Eigen::Dynamic, 1> getGeneralizedCoordinates(Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(state.rows() == info.stateDim);
       assert(state.cols() == 1);
-      return Eigen::Block<Derived, -1, 1>(state.derived(), 6, 0, info.generalizedCoordinatesNum, 1);
+      return Eigen::Block<Derived, Eigen::Dynamic, 1>(state.derived(), 6, 0, info.generalizedCoordinatesNum, 1);
     };
     
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    const Eigen::Block<const Derived, -1, 1> getGeneralizedCoordinates(const Eigen::MatrixBase<Derived>& state,
+    const Eigen::Block<const Derived, Eigen::Dynamic, 1> getGeneralizedCoordinates(const Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(state.rows() == info.stateDim);
       assert(state.cols() == 1);
-      return Eigen::Block<const Derived, -1, 1>(state.derived(), 6, 0, info.generalizedCoordinatesNum, 1);
+      return Eigen::Block<const Derived, Eigen::Dynamic, 1>(state.derived(), 6, 0, info.generalizedCoordinatesNum, 1);
     };
     
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    Eigen::Block<Derived, -1, 1> getJointAngles(Eigen::MatrixBase<Derived>& state,
+    Eigen::Block<Derived, Eigen::Dynamic, 1> getJointAngles(Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(state.rows() == info.stateDim);
       assert(state.cols() == 1);
-      return Eigen::Block<Derived, -1, 1>(state.derived(), 12, 0, info.actuatedDofNum, 1);
+      return Eigen::Block<Derived, Eigen::Dynamic, 1>(state.derived(), 12, 0, info.actuatedDofNum, 1);
     };
     
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    const Eigen::Block<const Derived, -1, 1> getJointAngles(const Eigen::MatrixBase<Derived>& state,
+    const Eigen::Block<const Derived, Eigen::Dynamic, 1> getJointAngles(const Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(state.rows() == info.stateDim);
       assert(state.cols() == 1);
-      return Eigen::Block<const Derived, -1, 1>(state.derived(), 12, 0, info.actuatedDofNum, 1);
+      return Eigen::Block<const Derived, Eigen::Dynamic, 1>(state.derived(), 12, 0, info.actuatedDofNum, 1);
     };
   
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    Eigen::Block<Derived, -1, 1> getJointVelocities(Eigen::MatrixBase<Derived>& input,
+    Eigen::Block<Derived, Eigen::Dynamic, 1> getJointVelocities(Eigen::MatrixBase<Derived>& input,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(input.rows() == info.inputDim);
       assert(input.cols() == 1);
       const size_t startRow = 3 * info.numThreeDofContacts + 6 * info.numSixDofContacts;
-      return Eigen::Block<Derived, -1, 1>(input.derived(), startRow, 0, info.actuatedDofNum, 1);
+      return Eigen::Block<Derived, Eigen::Dynamic, 1>(input.derived(), startRow, 0, info.actuatedDofNum, 1);
     };
     
     /******************************************************************************************************/
     /******************************************************************************************************/
     /******************************************************************************************************/
     template <typename Derived, typename SCALAR_T>
-    const Eigen::Block<const Derived, -1, 1> getJointVelocities(const Eigen::MatrixBase<Derived>& input,
+    const Eigen::Block<const Derived, Eigen::Dynamic, 1> getJointVelocities(const Eigen::MatrixBase<Derived>& input,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info)
     {
       assert(input.rows() == info.inputDim);
       assert(input.cols() == 1);
       const size_t startRow = 3 * info.numThreeDofContacts + 6 * info.numSixDofContacts;
-      return Eigen::Block<const Derived, -1, 1>(input.derived(), startRow, 0, info.actuatedDofNum, 1);
+      return Eigen::Block<const Derived, Eigen::Dynamic, 1>(input.derived(), startRow, 0, info.actuatedDofNum, 1);
     };
     
   }; // namespace access_helper_functions
