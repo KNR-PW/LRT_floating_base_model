@@ -85,7 +85,7 @@ namespace floating_base_model
     ocs2::vector_t getValue(ocs2::scalar_t time,
       const ocs2::vector_t& state,
       const ocs2::vector_t& input,
-      Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const;
+      const Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const;
 
     /**
      * Computes first order approximation of the system flow map x_dot = f(x, u)
@@ -96,9 +96,8 @@ namespace floating_base_model
      * @return linear approximation of system flow map x_dot = f(x, u)
      */
     ocs2::VectorFunctionLinearApproximation getLinearApproximation(ocs2::scalar_t time,
-      const ocs2::vector_t& state,
-      const ocs2::vector_t& input,
-      Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const;
+      const ocs2::vector_t& state, const ocs2::vector_t& input,
+      const Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const;
 
    private:
 

@@ -41,7 +41,28 @@ namespace floating_base_model {
    * @note All links and joints before base link (parents) will be removed,
    *  base link will become root of the model (after default pinocchio world frame)
    */
-  ocs2::PinocchioInterface createPinocchioInterface(const std::string& urdfFilePath,
+  ocs2::PinocchioInterface createPinocchioInterfaceFromUrdfFile(const std::string& urdfFilePath,
+    const std::string& baseLinkName);
+
+  /**
+   * Create a FloatingBaseModel PinocchioInterface from a URDF.
+   * @param [in] urdfFilePath: The URDF as XML string
+   * @param [in] baseLinkName: Name of base link (main body of legged robot)
+   * @note All links and joints before base link (parents) will be removed,
+   *  base link will become root of the model (after default pinocchio world frame)
+   */
+  ocs2::PinocchioInterface createPinocchioInterfaceFromXmlString(const std::string& xmlString,
+    const std::string& baseLinkName);
+
+  /**
+   * Create a FloatingBaseModel PinocchioInterface from a URDF.
+   * @param [in] urdfTree: Pointer to a URDF model interface
+   * @param [in] baseLinkName: Name of base link (main body of legged robot)
+   * @note All links and joints before base link (parents) will be removed,
+   *  base link will become root of the model (after default pinocchio world frame)
+   */
+  ocs2::PinocchioInterface createPinocchioInterface(
+    const ::urdf::ModelInterfaceSharedPtr& urdfInterface,
     const std::string& baseLinkName);
 
   /**

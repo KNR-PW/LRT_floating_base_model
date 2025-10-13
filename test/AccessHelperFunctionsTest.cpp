@@ -11,7 +11,7 @@ using namespace access_helper_functions;
 
 TEST(AccessHelperFunctions, StateConst)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   const auto state = getAccessTestRobotState();
 
@@ -48,7 +48,7 @@ TEST(AccessHelperFunctions, StateConst)
 
 TEST(AccessHelperFunctions, StateNonConst)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   const auto state = getAccessTestRobotState();
 
@@ -85,7 +85,7 @@ TEST(AccessHelperFunctions, StateNonConst)
 
 TEST(AccessHelperFunctions, InputConst)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   const auto input = getAccessTestRobotInput();
 
@@ -128,7 +128,7 @@ TEST(AccessHelperFunctions, InputConst)
 
 TEST(AccessHelperFunctions, InputNonConst)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   const auto input = getAccessTestRobotInput();
 

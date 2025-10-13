@@ -16,7 +16,7 @@ static constexpr size_t numTests = 100;
 
 TEST(ModelHelperFunctions, FloatingBaseLockedInertia)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   
   // Interface model and data (references)
@@ -54,7 +54,7 @@ TEST(ModelHelperFunctions, FloatingBaseLockedInertia)
 
 TEST(ModelHelperFunctions, BaseBodyAcceleration)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   
   // Interface model and data (references)
@@ -93,7 +93,7 @@ TEST(ModelHelperFunctions, BaseBodyAcceleration)
 
 TEST(ModelHelperFunctions, GeneralizedTorques)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   
   // Interface model and data (references)

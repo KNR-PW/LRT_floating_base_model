@@ -103,7 +103,7 @@ namespace floating_base_model
   ocs2::vector_t PinocchioFloatingBaseDynamicsAD::getValue(ocs2::scalar_t time,
     const ocs2::vector_t& state,
     const ocs2::vector_t& input,
-    Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const 
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const 
   {
     const ocs2::vector_t stateInput = (ocs2::vector_t(state.rows() + input.rows()) << state, input).finished();
     return systemFlowMapCppAdInterfacePtr_->getFunctionValue(stateInput, disturbance);
@@ -116,7 +116,7 @@ namespace floating_base_model
     ocs2::scalar_t time,
     const ocs2::vector_t& state,
     const ocs2::vector_t& input,
-    Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const 
+    const Eigen::Matrix<ocs2::scalar_t, 6, 1>& disturbance) const 
   {
     const ocs2::vector_t stateInput = (ocs2::vector_t(state.rows() + input.rows()) << state, input).finished();
     ocs2::VectorFunctionLinearApproximation approx;
@@ -127,5 +127,5 @@ namespace floating_base_model
     return approx;
   }
   
-  }  // namespace floatin_base_model
+} // namespace floating_base_model
   

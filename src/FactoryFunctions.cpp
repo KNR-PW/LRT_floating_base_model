@@ -7,15 +7,19 @@ namespace floating_base_model
   /******************************************************************************************************/
   /******************************************************************************************************/
   /******************************************************************************************************/
-  ocs2::PinocchioInterface createPinocchioInterface(const std::string& urdfFilePath, const std::string& baseLinkName)
+  ocs2::PinocchioInterface createPinocchioInterface(
+    const ::urdf::ModelInterfaceSharedPtr& urdfInterface,
+    const std::string& baseLinkName)
   {
     using joint_pair_t = std::pair<const std::string, std::shared_ptr<::urdf::Joint>>;
 
-    // Get model from file
-    ::urdf::ModelInterfaceSharedPtr urdfTree = ::urdf::parseURDFFile(urdfFilePath);
+    // Copy existing urdf interface
+    ::urdf::ModelInterfaceSharedPtr urdfTree = std::make_shared<::urdf::ModelInterface>(*urdfInterface);
+    
     if (urdfTree == nullptr) {
-      throw std::invalid_argument("The file " + urdfFilePath + " does not contain a valid URDF model!");
+      throw std::invalid_argument("URDF model tree is nullptr!");
     }
+
     // remove extraneous joints from urdf
     std::vector<std::string> jointsToRemove;
     std::vector<std::string> linksToRemove; 
@@ -79,6 +83,40 @@ namespace floating_base_model
 
     pinocchio::JointModelFreeFlyer freeFlyerJoint;
     return ocs2::getPinocchioInterfaceFromUrdfModel(urdfTree , freeFlyerJoint);
+  }
+
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  ocs2::PinocchioInterface createPinocchioInterfaceFromXmlString(const std::string& xmlString,
+    const std::string& baseLinkName)
+  {
+    ::urdf::ModelInterfaceSharedPtr urdfTree = ::urdf::parseURDF(xmlString);
+    if (urdfTree != nullptr) 
+    {
+      return createPinocchioInterface(urdfTree, baseLinkName);
+    } 
+    else 
+    {
+      throw std::invalid_argument("The XML stream does not contain a valid URDF model.");
+    }
+  }
+
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  /******************************************************************************************************/
+  ocs2::PinocchioInterface createPinocchioInterfaceFromUrdfFile(const std::string& urdfFilePath, 
+    const std::string& baseLinkName)
+  {
+    ::urdf::ModelInterfaceSharedPtr urdfTree = ::urdf::parseURDFFile(urdfFilePath);
+    if (urdfTree != nullptr) 
+    {
+      return createPinocchioInterface(urdfTree, baseLinkName);
+    } 
+    else 
+    {
+      throw std::invalid_argument("The file " + urdfFilePath + " does not contain a valid URDF model.");
+    }
   }
 
   /******************************************************************************************************/

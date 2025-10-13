@@ -139,7 +139,7 @@ class PinocchioPartialVelocityDerivativesAD final
 
 TEST(FloatingBaseModelPinocchioMapping, Getters)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   const pinocchio::Model model = interface.getModel();
   pinocchio::Data data = interface.getData();
@@ -178,7 +178,7 @@ TEST(FloatingBaseModelPinocchioMapping, Getters)
 
 TEST(FloatingBaseModelPinocchioMapping, ocs2Jacobian)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
   
   // Interface model and data (references)

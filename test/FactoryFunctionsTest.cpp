@@ -9,8 +9,8 @@ using namespace floating_base_model;
 
 TEST(FactoryFunctions, PinocchioInterface)
 {
-  ocs2::PinocchioInterface interfaceWithBaseLink = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
-  ocs2::PinocchioInterface interfaceWithoutBaseLink = createPinocchioInterface(meldogWithoutBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interfaceWithBaseLink = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interfaceWithoutBaseLink = createPinocchioInterfaceFromUrdfFile(meldogWithoutBaseLinkUrdfFile, baseLink);
 
   const auto& modelWithBaseLink = interfaceWithBaseLink.getModel();
   const auto& modelWithoutBaseLink = interfaceWithoutBaseLink.getModel();
@@ -19,7 +19,7 @@ TEST(FactoryFunctions, PinocchioInterface)
 
 TEST(FactoryFunctions, FloatingBaseModelInfo)
 {
-  ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+  ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
   auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
 
  

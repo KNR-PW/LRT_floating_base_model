@@ -20,7 +20,7 @@ static constexpr ocs2::scalar_t tolerance = 1e-6;
 static constexpr size_t numTests = 20;
 
 
-ocs2::PinocchioInterface interface = createPinocchioInterface(meldogWithBaseLinkUrdfFile, baseLink);
+ocs2::PinocchioInterface interface = createPinocchioInterfaceFromUrdfFile(meldogWithBaseLinkUrdfFile, baseLink);
 auto info = createFloatingBaseModelInfo(interface, meldog3DofContactNames, meldog6DofContactNames);
 
 // Interface model and data (references)
