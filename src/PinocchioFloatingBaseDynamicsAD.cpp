@@ -15,15 +15,16 @@ namespace floating_base_model
     bool recompileLibraries,
     bool verbose) 
   {
+
+    // initialize CppAD interface
+    auto pinocchioInterfaceCppAd = pinocchioInterface.toCppAd();
+  
+    // mapping
+    FloatingBaseModelPinocchioMappingCppAd mappingCppAd(info.toCppAd());
+    mappingCppAd.setPinocchioInterface(pinocchioInterfaceCppAd);
+    
     auto systemFlowMapFunc = [&](const ocs2::ad_vector_t& x, Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> params, ocs2::ad_vector_t& y) 
     {
-      // initialize CppAD interface
-      auto pinocchioInterfaceCppAd = pinocchioInterface.toCppAd();
-  
-      // mapping
-      FloatingBaseModelPinocchioMappingCppAd mappingCppAd(info.toCppAd());
-      mappingCppAd.setPinocchioInterface(pinocchioInterfaceCppAd);
-  
       ocs2::ad_vector_t state = x.head(info.stateDim);
       ocs2::ad_vector_t input = x.tail(info.inputDim);
       Eigen::Matrix<ocs2::ad_scalar_t, 6, 1> disturbance = params;
