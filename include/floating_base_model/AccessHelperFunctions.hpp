@@ -258,7 +258,7 @@ namespace floating_base_model
     * @return block with actuated joint angles
     */
     template <typename Derived, typename SCALAR_T>
-    Eigen::Block<Derived, Eigen::Dynamic, 1> getJointAngles(Eigen::MatrixBase<Derived>& state,
+    Eigen::Block<Derived, Eigen::Dynamic, 1> getJointPositions(Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info);
 
     /**
@@ -268,7 +268,7 @@ namespace floating_base_model
     * @return block with actuated joint angles
     */
     template <typename Derived, typename SCALAR_T>
-    const Eigen::Block<const Derived, Eigen::Dynamic, 1> getJointAngles(const Eigen::MatrixBase<Derived>& state,
+    const Eigen::Block<const Derived, Eigen::Dynamic, 1> getJointPositions(const Eigen::MatrixBase<Derived>& state,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info);
     
     /**

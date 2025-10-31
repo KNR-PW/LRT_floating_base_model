@@ -36,7 +36,7 @@ TEST(AccessHelperFunctions, StateConst)
   ASSERT_TRUE(basePose == basePoseTrue);
 
 
-  const Eigen::Vector<double, 12> jointAngles = getJointAngles(state, info);
+  const Eigen::Vector<double, 12> jointAngles = getJointPositions(state, info);
   const Eigen::Vector<double, 12> jointAnglesTrue = state.block<12, 1>(12, 0);
   ASSERT_TRUE(jointAngles == jointAnglesTrue);
 
@@ -73,7 +73,7 @@ TEST(AccessHelperFunctions, StateNonConst)
   ASSERT_TRUE(basePose == basePoseTrue);
 
 
-  Eigen::Vector<double, 12> jointAngles = getJointAngles(state, info);
+  Eigen::Vector<double, 12> jointAngles = getJointPositions(state, info);
   Eigen::Vector<double, 12> jointAnglesTrue = state.block<12, 1>(12, 0);
   ASSERT_TRUE(jointAngles == jointAnglesTrue);
 

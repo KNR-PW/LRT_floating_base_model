@@ -43,7 +43,7 @@ namespace floating_base_model
     const auto basePosition = access_helper_functions::getBasePosition(state, info);
     const Eigen::Matrix<SCALAR_T, 3, 1> baseEulerAngles = access_helper_functions::getBaseOrientationZyx(state, info);
     const Eigen::Quaternion<SCALAR_T>  baseQuaterion = quaterion_euler_transforms::getQuaternionFromEulerAnglesZyx(baseEulerAngles);
-    const auto  actuatedJointPostition = access_helper_functions::getJointAngles(state, info);
+    const auto  actuatedJointPostition = access_helper_functions::getJointPositions(state, info);
     
     vector_t pinocchioJointPosition(model.nq);
     pinocchioJointPosition << basePosition, baseQuaterion.coeffs(), actuatedJointPostition;
