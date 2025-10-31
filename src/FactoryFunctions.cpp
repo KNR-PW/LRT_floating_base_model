@@ -40,7 +40,6 @@ namespace floating_base_model
       if (std::find(linksToRemove.begin(), linksToRemove.end(), parent_name) != linksToRemove.end()) 
       {
         jointsToRemove.push_back(jointPair.second->name);
-        std::cout << jointPair.second->name << std::endl;
       }
     }
 
