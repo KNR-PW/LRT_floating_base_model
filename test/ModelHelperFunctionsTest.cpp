@@ -7,6 +7,7 @@
 
 #include "include/definitions.h"
 
+using namespace ocs2;
 using namespace floating_base_model;
 using namespace model_helper_functions;
 using namespace access_helper_functions;
@@ -39,13 +40,13 @@ TEST(ModelHelperFunctions, FloatingBaseLockedInertia)
     pinocchio::crba(modelTrue, dataTrue, q, pinocchio::Convention::LOCAL);
     dataTrue.M.triangularView<Eigen::StrictlyLower>() = dataTrue.M.transpose().triangularView<Eigen::StrictlyLower>();
 
-    Eigen::Matrix<double, 6, 6> MbTrue = dataTrue.M.block<6,6>(0, 0);
+    Eigen::Matrix<scalar_t, 6, 6> MbTrue = dataTrue.M.block<6,6>(0, 0);
 
-    Eigen::Matrix<double, 6, 6> Mb = computeFloatingBaseLockedInertia(interface);
+    Eigen::Matrix<scalar_t, 6, 6> Mb = computeFloatingBaseLockedInertia(interface);
 
-    Eigen::Matrix<double, 6, 6> MbInvTrue = MbTrue.inverse();
+    Eigen::Matrix<scalar_t, 6, 6> MbInvTrue = MbTrue.inverse();
 
-    Eigen::Matrix<double, 6, 6> MbInv = computeFloatingBaseLockedInertiaInverse(Mb);
+    Eigen::Matrix<scalar_t, 6, 6> MbInv = computeFloatingBaseLockedInertiaInverse(Mb);
 
     EXPECT_TRUE(Mb.isApprox(MbTrue, tolerance));
     EXPECT_TRUE(MbInv.isApprox(MbInvTrue, tolerance));
@@ -77,11 +78,11 @@ TEST(ModelHelperFunctions, BaseBodyAcceleration)
     pinocchio::crba(modelTrue, dataTrue, q, pinocchio::Convention::LOCAL);
     dataTrue.M.triangularView<Eigen::StrictlyLower>() = dataTrue.M.transpose().triangularView<Eigen::StrictlyLower>();
 
-    Eigen::Matrix<double, 6, 6> MbTrue = dataTrue.M.block<6,6>(0, 0);
+    Eigen::Matrix<scalar_t, 6, 6> MbTrue = dataTrue.M.block<6,6>(0, 0);
 
-    Eigen::Matrix<double, 6, 6> Mb = computeFloatingBaseLockedInertia(interface);
+    Eigen::Matrix<scalar_t, 6, 6> Mb = computeFloatingBaseLockedInertia(interface);
 
-    Eigen::Vector<double, 6> tau = Eigen::Vector<double, 6>::Random();
+    Eigen::Vector<scalar_t, 6> tau = Eigen::Vector<scalar_t, 6>::Random();
 
     ocs2::vector_t ddq = computeBaseBodyAcceleration(Mb, tau);
 
@@ -117,7 +118,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
     pinocchio::Force zero_force(Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
     pinocchio::container::aligned_vector<pinocchio::Force> fext(model.njoints, zero_force);
 
-    const auto input = getAccessTestRobotInput();
+    const vector_t input = vector_t::Random(info.inputDim);
 
     computeSpatialForces(interface, info, input, fext);
 
@@ -126,7 +127,7 @@ TEST(ModelHelperFunctions, GeneralizedTorques)
     pinocchio::updateFramePlacements(modelTrue, dataTrue);
     pinocchio::computeJointJacobians(modelTrue, dataTrue);
 
-    Eigen::Vector<double, Eigen::Dynamic> tauStaticTrue = Eigen::Vector<double, Eigen::Dynamic>::Zero(model.nv);
+    Eigen::Vector<scalar_t, Eigen::Dynamic> tauStaticTrue = Eigen::Vector<scalar_t, Eigen::Dynamic>::Zero(model.nv);
 
     for (size_t i = 0; i < info.numThreeDofContacts; i++) 
     {

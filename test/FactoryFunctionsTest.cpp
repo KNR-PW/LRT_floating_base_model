@@ -4,7 +4,7 @@
 #include "include/definitions.h"
 #include <algorithm>
 
-
+using namespace ocs2;
 using namespace floating_base_model;
 
 TEST(FactoryFunctions, PinocchioInterface)

@@ -115,7 +115,7 @@ TEST(QuaterionEulerTransformsTest, QuaterionAndEulerRotationMatrixGradient)
   Eigen::Vector3d V = Eigen::Vector3d::Random();
   const auto dVdq = getRotatedVectorQuaterionGraient(quaterion, V);
 
-  Eigen::Matrix<double, 3, 4> dVdq_2;
+  Eigen::Matrix<ocs2::scalar_t, 3, 4> dVdq_2;
   dVdq_2 << dRdq[0] * V, dRdq[1] * V, dRdq[2] * V, dRdq[3] * V;
 
   const auto norm_v = (dVdq  - dVdq_2).norm();
