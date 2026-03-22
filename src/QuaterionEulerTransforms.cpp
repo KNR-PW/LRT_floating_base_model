@@ -1,5 +1,7 @@
 #include "floating_base_model/QuaterionEulerTransforms.hpp"
 
+#include <ocs2_robotic_tools/common/RotationTransforms.h>
+
 namespace quaterion_euler_transforms
 {
   /******************************************************************************************************/
@@ -35,6 +37,9 @@ namespace quaterion_euler_transforms
       eulerAngles(1) = atan2(-rotationMatrix(2, 0), temp);
       eulerAngles(2) = atan2(rotationMatrix(2, 1), rotationMatrix(2, 2));
     }
+
+    ocs2::makeEulerAnglesUnique(eulerAngles);
+
     return eulerAngles;
   }
   /******************************************************************************************************/
