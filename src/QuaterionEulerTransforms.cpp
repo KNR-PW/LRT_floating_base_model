@@ -27,7 +27,7 @@ namespace quaterion_euler_transforms
     if(rotationMatrix(0, 0) == 0 && rotationMatrix(1, 0) == 0)
     {
       eulerAngles(0) = 0;
-      eulerAngles(1) = M_PI_2;
+      eulerAngles(1) = SCALAR_T(M_PI_2);
       eulerAngles(2) = atan2(rotationMatrix(0, 1), rotationMatrix(1, 1));
     }
     else
@@ -37,8 +37,6 @@ namespace quaterion_euler_transforms
       eulerAngles(1) = atan2(-rotationMatrix(2, 0), temp);
       eulerAngles(2) = atan2(rotationMatrix(2, 1), rotationMatrix(2, 2));
     }
-
-    ocs2::makeEulerAnglesUnique(eulerAngles);
 
     return eulerAngles;
   }
