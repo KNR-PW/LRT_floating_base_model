@@ -84,7 +84,7 @@ namespace floating_base_model
     * @return block with contact wrenches [force, torque]
     */
     template <typename Derived, typename SCALAR_T>
-    Eigen::Block<const Derived, 6, 1> getContactWrenches(Eigen::MatrixBase<Derived>& input,
+    Eigen::Block<Derived, 6, 1> getContactWrenches(Eigen::MatrixBase<Derived>& input,
       size_t contactIndex,
       const FloatingBaseModelInfoTpl<SCALAR_T>& info);
     

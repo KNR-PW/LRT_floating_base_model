@@ -26,6 +26,11 @@ namespace floating_base_model
 
     ::urdf::LinkConstSharedPtr baseLink = urdfTree ->getLink(baseLinkName);
 
+    if(baseLink == nullptr)
+    {
+      throw std::invalid_argument("Could not find base link with name: " + baseLinkName);
+    }
+
     // Get all parents of Base Link
     while(baseLink->getParent() != nullptr)
     {
